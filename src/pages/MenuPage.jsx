@@ -59,9 +59,10 @@ export default function MenuPage() {
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const frontendBaseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
 
   const handleCopyLink = async () => {
-    const shareUrl = `${window.location.origin}/menu?vendorId=${vendorIdFromQuery}`;
+    const shareUrl = `${frontendBaseUrl}/menu?vendorId=${vendorIdFromQuery}`;
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
@@ -74,7 +75,7 @@ export default function MenuPage() {
   };
 
   const handleShareClick = async () => {
-    const shareUrl = `${window.location.origin}/menu?vendorId=${vendorIdFromQuery}`;
+    const shareUrl = `${frontendBaseUrl}/menu?vendorId=${vendorIdFromQuery}`;
     const shareText = `Check out the menu of ${vendorData.name} on Qzaam! 🍽️`;
 
     if (navigator.share) {
@@ -343,7 +344,7 @@ export default function MenuPage() {
               {/* WhatsApp Button */}
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                  `Check out the menu of ${vendorData.name} on Qzaam! 🍽️\nBrowse and order directly: ${window.location.origin}/menu?vendorId=${vendorIdFromQuery}`
+                  `Check out the menu of ${vendorData.name} on Qzaam! 🍽️\nBrowse and order directly: ${frontendBaseUrl}/menu?vendorId=${vendorIdFromQuery}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -356,7 +357,7 @@ export default function MenuPage() {
               {/* Telegram Button */}
               <a
                 href={`https://t.me/share/url?url=${encodeURIComponent(
-                  `${window.location.origin}/menu?vendorId=${vendorIdFromQuery}`
+                  `${frontendBaseUrl}/menu?vendorId=${vendorIdFromQuery}`
                 )}&text=${encodeURIComponent(
                   `Check out the menu of ${vendorData.name} on Qzaam! 🍽️`
                 )}`}
@@ -378,7 +379,7 @@ export default function MenuPage() {
                 <input
                   type="text"
                   readOnly
-                  value={`${window.location.origin}/menu?vendorId=${vendorIdFromQuery}`}
+                  value={`${frontendBaseUrl}/menu?vendorId=${vendorIdFromQuery}`}
                   className="w-full bg-transparent text-xs text-zinc-600 dark:text-zinc-400 rounded-xl px-2.5 outline-none select-all truncate font-mono"
                 />
                 <button
