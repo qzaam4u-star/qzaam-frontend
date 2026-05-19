@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import CustomerLoginModal from '../components/CustomerLoginModal';
 import toast from 'react-hot-toast';
 
-const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SkrpjWAPFjMaX5';
+const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY;
 
 const STEPS = [
   { label: 'Select Services', icon: '✂️' },

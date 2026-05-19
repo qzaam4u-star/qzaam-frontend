@@ -168,7 +168,7 @@ export default function CheckoutModal() {
 
       // Open Razorpay Popup
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_SkrpjWAPFjMaX5',
+        key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: rzpOrder.amount,
         currency: 'INR',
         name: 'Qzaam',
