@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import Modal from './Modal';
 import Button from './Button';
-import OTPModal from './OTPModal';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import api from '../utils/api';
 
-export default function CustomerLoginModal({ isOpen, onClose, isCheckoutFlow = false }) {
+export default function CustomerLoginModal({ isOpen, onClose }) {
   const { setCustomerSession } = useAuth();
 
   const [info, setInfo] = useState({ name: '', phone: '' });
-  const [step, setStep] = useState(1); // 1: Info, 2: OTP
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,63 +22,30 @@ export default function CustomerLoginModal({ isOpen, onClose, isCheckoutFlow = f
       return;
     }
     setError('');
-    try {
-      const res = await api.get(`/customer/profile?phone=${info.phone}`);
-      if (res.data.success) {
-        setStep(2);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Verification failed. Please try again.');
-    }
-  };
-
-  const handleVerify = async () => {
     setLoading(true);
     try {
-      // 1. Start with name from form (if any) or fallback
-      let finalName = info.name.trim() || 'Guest User';
-      let customerId = null;
-      // 2. Try to fetch real name and ID from DB
-      try {
-        const res = await api.get(`/customer/profile?phone=${info.phone}`);
-        if (res.data.success && res.data.data) {
-          finalName = res.data.data.name || finalName;
-          customerId = res.data.data.id;
-        }
-      } catch (profileErr) {
-        console.error("Could not fetch profile, using form name:", profileErr);
-      }
-
-      const customerData = {
-        id: customerId,
-        name: finalName,
+      const res = await api.post('/customer/login', {
+        name: info.name,
         phone: info.phone
-      };
-      
-      setCustomerSession(customerData);
-      toast.success(`Welcome back, ${finalName.split(' ')[0]}!`);
-      onClose();
-      // Brief delay to allow toast to be seen before reload
-      setTimeout(() => window.location.reload(), 500);
+      });
+      if (res.data.success) {
+        const customerData = {
+          id: res.data.data.id,
+          name: res.data.data.name,
+          phone: res.data.data.phone
+        };
+        setCustomerSession(customerData);
+        toast.success(`Welcome, ${customerData.name.split(' ')[0]}!`);
+        onClose();
+        // Brief delay to allow toast to be seen before reload
+        setTimeout(() => window.location.reload(), 500);
+      }
     } catch (err) {
-      toast.error('Login failed. Please try again.');
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  if (step === 2) {
-    return (
-      <OTPModal
-        isOpen={isOpen}
-        onClose={() => setStep(1)}
-        onVerify={handleVerify}
-        phone={info.phone}
-        isCheckoutFlow={isCheckoutFlow}
-      />
-    );
-
-  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Customer Login" size="sm">
@@ -102,7 +67,7 @@ export default function CustomerLoginModal({ isOpen, onClose, isCheckoutFlow = f
 
         <div className="space-y-4 mb-8">
           <div>
-            <label className="block text-[10px] uppercase font-black text-zinc-500 tracking-widest mb-1.5 ml-1">Your Name (Optional)</label>
+            <label className="block text-[10px] uppercase font-black text-zinc-500 tracking-widest mb-1.5 ml-1">Your Name</label>
             <input
               type="text"
               placeholder="e.g. Rahul Sharma"
@@ -130,14 +95,13 @@ export default function CustomerLoginModal({ isOpen, onClose, isCheckoutFlow = f
         <Button
           fullWidth
           onClick={handleContinue}
-          disabled={info.phone.length !== 10}
+          disabled={loading || info.phone.length !== 10 || !info.name.trim()}
         >
-          {isCheckoutFlow ? "Verify & Place Order" : "Verify"}
+          {loading ? "Processing..." : "Continue"}
         </Button>
 
-        
         <p className="text-[10px] text-zinc-400 text-center mt-6 uppercase tracking-widest">
-          Secure login via <span className="text-[#8cb800] dark:text-[#d4ff00] font-bold">Qzaam OTP</span>
+          Direct secure login via name and number
         </p>
       </div>
     </Modal>

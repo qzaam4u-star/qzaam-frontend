@@ -6,7 +6,6 @@ import { formatCurrency } from '../utils/formatCurrency';
 import api from '../utils/api';
 import Modal from './Modal';
 import Button from './Button';
-import OTPModal from './OTPModal';
 import FoodSlotPicker from './FoodSlotPicker';
 import toast from 'react-hot-toast';
 
@@ -22,7 +21,6 @@ export default function CheckoutModal() {
   const [guestInfo, setGuestInfo] = useState({ name: '', phone: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showOTP, setShowOTP] = useState(false);
   const [deliveryTime, setDeliveryTime] = useState('ASAP');
 
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
@@ -57,7 +55,6 @@ export default function CheckoutModal() {
         phone: customer?.phone || '',
       });
       setError('');
-      setShowOTP(false);
       
       // Fetch vendor details to check slot booking support
       const vendorId = activeVendorId || items[0]?.vendorId;
@@ -86,7 +83,26 @@ export default function CheckoutModal() {
       return;
     }
     setError('');
-    setShowOTP(true);
+    setLoading(true);
+
+    api.post('/customer/login', {
+      name: guestInfo.name,
+      phone: guestInfo.phone
+    })
+    .then(res => {
+      if (res.data.success) {
+        setCustomerSession({
+          id: res.data.data.id,
+          name: res.data.data.name,
+          phone: res.data.data.phone
+        });
+      }
+      handlePlaceOrder();
+    })
+    .catch(err => {
+      console.error('Login checkout fallback:', err);
+      handlePlaceOrder();
+    });
   };
 
 
@@ -125,7 +141,6 @@ export default function CheckoutModal() {
           localStorage.setItem("ql_last_order_id", order.id);
 
           clearCart();
-          setShowOTP(false);
           closeCheckout();
 
           // 🔥 Trigger vendor refresh real-time
@@ -190,7 +205,6 @@ export default function CheckoutModal() {
               localStorage.setItem("ql_last_order_id", order.id);
 
               clearCart();
-              setShowOTP(false);
               closeCheckout();
 
               // 🔥 Trigger vendor refresh real-time
@@ -220,23 +234,12 @@ export default function CheckoutModal() {
     } catch (err) {
       console.error('Failed to initiate payment:', err);
       setError(err.response?.data?.message || err.message || 'Failed to initiate payment. Please try again.');
-      setShowOTP(false);
     } finally {
       setLoading(false);
     }
   };
 
-  if (showOTP) {
-    return (
-      <OTPModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setShowOTP(false)}
-        onVerify={handlePlaceOrder}
-        phone={guestInfo.phone}
-        isCheckoutFlow={true}
-      />
-    );
-  }
+
 
   return (
     <Modal isOpen={isCheckoutOpen} onClose={closeCheckout} title="Order Summary" size="md">
@@ -301,7 +304,7 @@ export default function CheckoutModal() {
               </div>
             )}
             <p className="text-[10px] text-zinc-400 italic">
-              {customer ? '✓ Pre-filled from your session. OTP required for every order.' : 'Enter details to receive OTP verification.'}
+              {customer ? '✓ Pre-filled from your session.' : 'Enter your name and phone number to continue.'}
             </p>
           </div>
 

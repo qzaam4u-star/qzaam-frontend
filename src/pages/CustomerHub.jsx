@@ -37,7 +37,7 @@ export default function CustomerHub() {
                 <span className="font-bold text-[#8cb800] dark:text-[#d4ff00]">3.</span> Choose your expected delivery / pickup time (ASAP, 10m, 20m, 30m).
               </li>
               <li className="flex gap-3">
-                <span className="font-bold text-[#8cb800] dark:text-[#d4ff00]">4.</span> Verify your OTP and place the order in seconds.
+                <span className="font-bold text-[#8cb800] dark:text-[#d4ff00]">4.</span> Identify yourself and place the order in seconds.
               </li>
               <li className="flex gap-3">
                 <span className="font-bold text-[#8cb800] dark:text-[#d4ff00]">5.</span> Arrive, show your order ID, and collect your items with no queue.
@@ -69,7 +69,7 @@ export default function CustomerHub() {
                 <span className="text-red-500 font-bold">!</span> <strong className="text-zinc-900 dark:text-zinc-200">Vendor delays:</strong> High-traffic hours might introduce minor vendor prep delays.
               </li>
               <li className="flex gap-3">
-                <span className="text-red-500 font-bold">!</span> <strong className="text-zinc-900 dark:text-zinc-200">Network issues:</strong> Smooth OTP verification relies on strong mobile network reception.
+                <span className="text-red-500 font-bold">!</span> <strong className="text-zinc-900 dark:text-zinc-200">Network issues:</strong> Ordering relies on a stable internet connection.
               </li>
               <li className="flex gap-3">
                 <span className="text-red-500 font-bold">!</span> <strong className="text-zinc-900 dark:text-zinc-200">Item unavailabilities:</strong> Rare occasions where the vendor runs out of menu items.

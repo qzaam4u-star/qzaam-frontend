@@ -127,7 +127,7 @@ export default function CartPage() {
               </Button>
               
               <p className="text-[10px] text-zinc-400 text-center mt-4 uppercase tracking-widest font-black">
-                OTP verification next
+                Identification next
               </p>
             </Card>
           </div>
