@@ -14,6 +14,11 @@ export default function WalletPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Referral System States
+  const [totalReferrals, setTotalReferrals] = useState(0);
+  const [rewardsEarned, setRewardsEarned] = useState(0);
+  const [referralsHistory, setReferralsHistory] = useState([]);
+
   const customer = JSON.parse(localStorage.getItem('ql_customer') || '{}');
   const phone = user?.mobile || customer?.phone || '';
 
@@ -26,6 +31,9 @@ export default function WalletPage() {
           if (res.data.referralCode) {
             setReferralCode(res.data.referralCode);
           }
+          setTotalReferrals(res.data.totalReferrals || 0);
+          setRewardsEarned(res.data.rewardsEarned || 0);
+          setReferralsHistory(res.data.referralsHistory || []);
         })
         .catch(err => {
           console.error('Failed to load wallet details:', err);
@@ -190,13 +198,17 @@ export default function WalletPage() {
             Qzaam Referral Code
           </div>
           <h1 className="text-4xl font-black text-zinc-900 dark:text-white leading-tight">
-            Gift <span className="text-[#8cb800] dark:text-[#d4ff00]">₹100</span>
+            Gift <span className="text-[#8cb800] dark:text-[#d4ff00]">{referralCode.startsWith('VENDOR-') ? '₹100' : 'Waived Fee'}</span>
           </h1>
 
           <Card className="p-6 sm:p-8 bg-zinc-50 dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 shadow-2xl flex flex-col items-center justify-center text-center space-y-6">
             <div>
               <h3 className="text-xl font-bold text-zinc-900 dark:text-white">Your Unique Referral Code</h3>
-              <p className="text-sm text-zinc-500 mt-1">Share with friends to onboard as vendors</p>
+              <p className="text-sm text-zinc-500 mt-1">
+                {referralCode.startsWith('VENDOR-') 
+                  ? 'Share with friends to onboard as vendors' 
+                  : 'Invite friends! They get their platform fee waived, and you get ₹50 when they order.'}
+              </p>
             </div>
 
             {referralCode ? (
@@ -217,10 +229,27 @@ export default function WalletPage() {
             )}
           </Card>
 
+          {referralCode && !referralCode.startsWith('VENDOR-') && (
+            <div className="grid grid-cols-2 gap-4">
+              <Card className="p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
+                <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Total Referred</p>
+                <h4 className="text-2xl font-black text-zinc-900 dark:text-white mt-1">{totalReferrals} Friend{totalReferrals !== 1 ? 's' : ''}</h4>
+              </Card>
+              <Card className="p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
+                <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Rewards Earned</p>
+                <h4 className="text-2xl font-black text-emerald-500 mt-1">₹{rewardsEarned.toFixed(2)}</h4>
+              </Card>
+            </div>
+          )}
+
           <div className="p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-xs text-zinc-500 dark:text-zinc-400">
             <p className="font-bold mb-1 text-zinc-700 dark:text-zinc-300">Terms & Conditions:</p>
             <p>• Digital Cash inside your wallet is non-refundable and cannot be withdrawn.</p>
-            <p>• Referral rewards are granted instantly when the referred vendor processes their first 10 orders.</p>
+            {referralCode.startsWith('VENDOR-') ? (
+              <p>• Referral rewards are granted instantly when the referred vendor processes their first 10 orders.</p>
+            ) : (
+              <p>• Referral rewards (₹50) are credited once your referred friend's first food order or salon booking transitions to "completed" status.</p>
+            )}
           </div>
         </div>
 
@@ -250,6 +279,41 @@ export default function WalletPage() {
                     </div>
                     <div className={`font-black ${tx.type === "credit" ? "text-green-500" : "text-red-500"}`}>
                       {tx.type === "credit" ? "+" : "-"}₹{tx.amount.toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* Referred Friends History Section */}
+        <div className="mt-8 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10px] font-black uppercase tracking-widest">
+            Network Growth
+          </div>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Friends Referred</h2>
+
+          <Card className="p-4 sm:p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+            {referralsHistory.length === 0 ? (
+              <p className="text-zinc-500 dark:text-zinc-400 text-center py-6">No friends referred yet. Share your code to get started!</p>
+            ) : (
+              <div className="space-y-3">
+                {referralsHistory.map(ref => (
+                  <div key={ref.id} className="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-3 last:border-0 last:pb-0">
+                    <div>
+                      <p className="text-sm font-bold text-zinc-900 dark:text-white">
+                        {ref.name}
+                      </p>
+                      <p className="text-xs text-zinc-500">
+                        Joined: {new Date(ref.joinedAt).toLocaleDateString()} · {ref.phone}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                        {ref.status}
+                      </span>
+                      <p className="text-xs font-black text-emerald-500 mt-1">+₹{ref.rewardAmount.toFixed(2)}</p>
                     </div>
                   </div>
                 ))}

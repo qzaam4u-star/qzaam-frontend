@@ -42,6 +42,27 @@ export default function SalonBookingPage({ vendor, vendorId }) {
   const [customerName, setCustomerName] = useState(customer?.name || '');
   const [customerPhone, setCustomerPhone] = useState(customer?.phone || '');
 
+  // Customer Referral States
+  const [referralInput, setReferralInput] = useState('');
+  const [isReferralApplied, setIsReferralApplied] = useState(false);
+  const [referralLoading, setReferralLoading] = useState(false);
+  const [referralError, setReferralError] = useState('');
+
+  // Sync customer session updates
+  useEffect(() => {
+    if (customer) {
+      setCustomerName(customer.name || '');
+      setCustomerPhone(customer.phone || '');
+    }
+  }, [customer]);
+
+  // Reset referral application if phone number changes
+  useEffect(() => {
+    setIsReferralApplied(false);
+    setReferralInput('');
+    setReferralError('');
+  }, [customerPhone]);
+
   const todayStr = new Date().toISOString().split('T')[0];
 
   const generateSlots = () => {
@@ -150,7 +171,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
   const subtotal = selectedServices.reduce((sum, s) => sum + s.price, 0);
   const totalDuration = selectedServices.reduce((sum, s) => sum + (s.duration || 30), 0);
 
-  // Fetch totals from backend whenever subtotal changes
+  // Fetch totals from backend whenever subtotal changes or referral changes
   useEffect(() => {
     if (subtotal === 0) {
       setBackendTotals({ subtotal: 0, platformFee: 0, tax: 0, deliveryFee: 0, finalTotal: 0 });
@@ -159,10 +180,15 @@ export default function SalonBookingPage({ vendor, vendorId }) {
 
     const fetchTotals = async () => {
       try {
-        const res = await api.post('/orders/calculate-total', {
+        const payload = {
           subtotal,
           vendorId
-        });
+        };
+        if (isReferralApplied && referralInput) {
+          payload.referralCode = referralInput.trim().toUpperCase();
+          payload.phone = customerPhone.trim();
+        }
+        const res = await api.post('/orders/calculate-total', payload);
         if (res.data.success) {
           setBackendTotals(res.data.data);
           console.log('[DEBUG] Salon Backend Totals:', res.data.data);
@@ -172,7 +198,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
       }
     };
     fetchTotals();
-  }, [subtotal, vendorId]);
+  }, [subtotal, vendorId, isReferralApplied, referralInput, customerPhone]);
 
   const platformFee = backendTotals.platformFee;
   const finalAmount = backendTotals.finalTotal;
@@ -197,16 +223,57 @@ export default function SalonBookingPage({ vendor, vendorId }) {
     customerPhone,
     services: selectedServices.map(s => ({ id: s.id, name: s.name, price: s.price, duration: s.duration })),
     totalAmount: backendTotals.subtotal,
-    platformFee: backendTotals.platformFee,
-    finalAmount: backendTotals.finalTotal,
+    platformFee: isReferralApplied ? 0 : backendTotals.platformFee,
+    finalAmount: isReferralApplied ? backendTotals.subtotal : backendTotals.finalTotal,
     slotTime: new Date(`${selectedDate}T${selectedSlot}:00`).toISOString(),
     stylistId: selectedStylist?.id === 'anyone' ? null : selectedStylist?.id,
-    stylistPreference: selectedStylist?.id === 'anyone' ? 'anyone' : 'specific'
+    stylistPreference: selectedStylist?.id === 'anyone' ? 'anyone' : 'specific',
+    appliedReferralCode: isReferralApplied ? referralInput.trim().toUpperCase() : null
   });
 
+  const handleApplyReferral = async () => {
+    if (!customerPhone.trim()) {
+      setReferralError('Please enter your phone number first.');
+      return;
+    }
+    if (!/^\d{10}$/.test(customerPhone.trim())) {
+      setReferralError('Please enter a valid 10-digit phone number first.');
+      return;
+    }
+    setReferralLoading(true);
+    setReferralError('');
+    try {
+      const res = await api.post('/referral/validate', {
+        code: referralInput,
+        phone: customerPhone.trim()
+      });
+      if (res.data.success) {
+        setIsReferralApplied(true);
+        setReferralError('');
+        toast.success('Platform fee waived!');
+      } else {
+        setReferralError(res.data.message || 'Invalid referral code');
+      }
+    } catch (err) {
+      setReferralError(err.response?.data?.message || 'Invalid referral code');
+    } finally {
+      setReferralLoading(false);
+    }
+  };
+
+  const handleRemoveReferral = () => {
+    setIsReferralApplied(false);
+    setReferralInput('');
+    setReferralError('');
+    toast.success('Referral code removed.');
+  };
 
   const handleRazorpayPay = async () => {
     if (!customerName || !customerPhone) return toast.error('Please fill your details');
+    // If referral is applied, platform fee is 0, so bypass Razorpay and process via Wallet endpoint
+    if (isReferralApplied) {
+      return handleWalletPay();
+    }
     setPaying(true);
     try {
       const orderRes = await api.post('/payment/create-order', { amount: platformFee });
@@ -265,8 +332,9 @@ export default function SalonBookingPage({ vendor, vendorId }) {
       const balance = walletRes.data.wallet ? walletRes.data.wallet.balance : (walletRes.data.balance || 0);
       const customerId = walletRes.data.wallet ? (walletRes.data.wallet.customerId || walletRes.data.wallet.userId) : activeUser.id;
 
-      if (balance < platformFee) {
-        toast.error(`Insufficient wallet balance. You have ₹${balance}, need ₹${platformFee}`);
+      const effectiveFee = isReferralApplied ? 0 : platformFee;
+      if (balance < effectiveFee) {
+        toast.error(`Insufficient wallet balance. You have ₹${balance}, need ₹${effectiveFee}`);
         setPaying(false);
         return;
       }
@@ -274,8 +342,8 @@ export default function SalonBookingPage({ vendor, vendorId }) {
       const orderData = buildOrderData();
       const res = await api.post('/payment/wallet-pay', {
         userId: customerId,
-        amount: platformFee,
-        commissionAmount: platformFee,
+        amount: effectiveFee,
+        commissionAmount: effectiveFee,
         orderData
       });
 
@@ -655,6 +723,48 @@ export default function SalonBookingPage({ vendor, vendorId }) {
               </div>
             )}
 
+            {/* Referral Code Card */}
+            <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-5 space-y-3">
+              <h3 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                <span>🎁</span> Referral Code
+              </h3>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter CUST-XXXXX code"
+                  autoComplete="off"
+                  value={referralInput}
+                  disabled={isReferralApplied}
+                  onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
+                  className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#d4ff00] flex-1 transition-colors font-mono uppercase"
+                />
+                {isReferralApplied ? (
+                  <button
+                    onClick={handleRemoveReferral}
+                    className="px-4 py-3 rounded-2xl border border-red-500/30 bg-red-500/5 text-red-500 text-sm font-bold hover:bg-red-500/10 transition-all shrink-0"
+                  >
+                    Remove
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleApplyReferral}
+                    disabled={!referralInput.trim() || !customerPhone.trim() || referralLoading}
+                    className="px-5 py-3 rounded-2xl bg-[#d4ff00] text-black text-sm font-black disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#c0e600] transition-all shrink-0"
+                  >
+                    {referralLoading ? 'Checking...' : 'Apply'}
+                  </button>
+                )}
+              </div>
+              {referralError && (
+                <p className="text-xs font-bold text-red-500 ml-1">{referralError}</p>
+              )}
+              {isReferralApplied && (
+                <p className="text-xs font-bold text-emerald-500 ml-1 animate-pulse flex items-center gap-1">
+                  <span>✅</span> Platform fee waived using referral code!
+                </p>
+              )}
+            </div>
+
             {/* Booking Summary */}
             <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-5 space-y-3">
               <div className="flex justify-between text-xs text-zinc-500 font-bold">
@@ -679,33 +789,58 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                 {backendTotals.tax > 0 && (
                   <div className="flex justify-between text-xs text-zinc-500"><span>GST (5%)</span><span>{formatCurrency(backendTotals.tax)}</span></div>
                 )}
-                <div className="flex justify-between text-xs text-emerald-500 font-bold"><span>Platform Fee (paid now)</span><span>{formatCurrency(backendTotals.platformFee)}</span></div>
-                <div className="flex justify-between text-xs text-zinc-500 font-black pt-1 border-t border-zinc-100 dark:border-zinc-800 mt-1"><span>Total Payable</span><span>{formatCurrency(backendTotals.finalTotal)}</span></div>
+                <div className="flex justify-between text-xs text-emerald-500 font-bold">
+                  <span>Platform Fee (paid now)</span>
+                  {isReferralApplied ? (
+                    <div className="flex items-center gap-2">
+                      <span className="line-through text-zinc-400 font-medium">{formatCurrency(platformFee)}</span>
+                      <span className="font-black text-emerald-500">{formatCurrency(0)}</span>
+                    </div>
+                  ) : (
+                    <span>{formatCurrency(platformFee)}</span>
+                  )}
+                </div>
+                <div className="flex justify-between text-xs text-zinc-500 font-black pt-1 border-t border-zinc-100 dark:border-zinc-800 mt-1">
+                  <span>Total Payable Now</span>
+                  <span>{formatCurrency(isReferralApplied ? 0 : finalAmount)}</span>
+                </div>
               </div>
             </div>
 
             <div className="space-y-3">
-              <button
-                onClick={handleRazorpayPay}
-                disabled={paying}
-                className="w-full py-4 bg-[#d4ff00] text-black font-black rounded-2xl shadow-[0_0_30px_rgba(212,255,0,0.2)] hover:bg-[#c0e600] transition-all disabled:opacity-50"
-              >
-                {paying ? 'Processing...' : `Pay ₹${platformFee} via Razorpay`}
-              </button>
-              {customer && (
+              {isReferralApplied ? (
                 <button
                   onClick={handleWalletPay}
-                  disabled={paying || walletBalance < platformFee}
-                  className="w-full py-3.5 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all disabled:opacity-50"
+                  disabled={paying}
+                  className="w-full py-4 bg-[#d4ff00] text-black font-black rounded-2xl shadow-[0_0_30px_rgba(212,255,0,0.25)] hover:bg-[#c0e600] transition-all disabled:opacity-50"
                 >
-                  {walletBalance < platformFee ? 'Insufficient Balance' : 'Pay via Wallet'}
-                  <span className="text-xs text-zinc-500 ml-2">
-                    (Balance: {formatCurrency(walletBalance)})
-                  </span>
+                  {paying ? 'Processing...' : 'Confirm Booking (Waived Platform Fee) 🎉'}
                 </button>
+              ) : (
+                <>
+                  <button
+                    onClick={handleRazorpayPay}
+                    disabled={paying}
+                    className="w-full py-4 bg-[#d4ff00] text-black font-black rounded-2xl shadow-[0_0_30px_rgba(212,255,0,0.2)] hover:bg-[#c0e600] transition-all disabled:opacity-50"
+                  >
+                    {paying ? 'Processing...' : `Pay ₹${platformFee} via Razorpay`}
+                  </button>
+                  {customer && (
+                    <button
+                      onClick={handleWalletPay}
+                      disabled={paying || walletBalance < platformFee}
+                      className="w-full py-3.5 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all disabled:opacity-50"
+                    >
+                      {walletBalance < platformFee ? 'Insufficient Balance' : 'Pay via Wallet'}
+                      <span className="text-xs text-zinc-500 ml-2">
+                        (Balance: {formatCurrency(walletBalance)})
+                      </span>
+                    </button>
+                  )}
+                </>
               )}
               <p className="text-[10px] font-bold text-emerald-500 text-center px-4 py-2 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
-                ✨ Only the platform fee ({formatCurrency(platformFee)}) is paid online/via wallet. The service amount ({formatCurrency(subtotal)}) is to be paid at the salon.
+                ✨ Only the platform fee ({formatCurrency(isReferralApplied ? 0 : platformFee)}) is paid online/via wallet. The service amount ({formatCurrency(subtotal)}) is to be paid at the salon.
               </p>
             </div>
             <button onClick={() => setStep(2)} className="w-full text-center text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors py-2">← Back to stylists</button>

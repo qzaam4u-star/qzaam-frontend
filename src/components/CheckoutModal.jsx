@@ -29,6 +29,49 @@ export default function CheckoutModal() {
   const [vendor, setVendor] = useState(null);
   const [selectedSlotData, setSelectedSlotData] = useState(null);
 
+  // Customer Referral States
+  const [referralInput, setReferralInput] = useState('');
+  const [isReferralApplied, setIsReferralApplied] = useState(false);
+  const [referralLoading, setReferralLoading] = useState(false);
+  const [referralError, setReferralError] = useState('');
+
+  const handleApplyReferral = async () => {
+    if (!guestInfo.phone.trim()) {
+      setReferralError('Please enter your phone number first.');
+      return;
+    }
+    if (!/^\d{10}$/.test(guestInfo.phone)) {
+      setReferralError('Please enter a valid 10-digit phone number first.');
+      return;
+    }
+    setReferralLoading(true);
+    setReferralError('');
+    try {
+      const res = await api.post('/referral/validate', {
+        code: referralInput,
+        phone: guestInfo.phone
+      });
+      if (res.data.success) {
+        setIsReferralApplied(true);
+        setReferralError('');
+        toast.success('Platform fee waived!');
+      } else {
+        setReferralError(res.data.message || 'Invalid referral code');
+      }
+    } catch (err) {
+      setReferralError(err.response?.data?.message || 'Invalid referral code');
+    } finally {
+      setReferralLoading(false);
+    }
+  };
+
+  const handleRemoveReferral = () => {
+    setIsReferralApplied(false);
+    setReferralInput('');
+    setReferralError('');
+    toast.success('Referral code removed.');
+  };
+
 
 
 
@@ -55,6 +98,9 @@ export default function CheckoutModal() {
         phone: customer?.phone || '',
       });
       setError('');
+      setIsReferralApplied(false);
+      setReferralInput('');
+      setReferralError('');
       
       // Fetch vendor details to check slot booking support
       const vendorId = activeVendorId || items[0]?.vendorId;
@@ -118,20 +164,41 @@ export default function CheckoutModal() {
         vendorId,
         items: items.map(i => ({ id: i.id, name: i.name, quantity: i.quantity, price: i.price })),
         totalAmount: subtotal,
-        platformFee: fee,
-        finalAmount: total,
+        platformFee: isReferralApplied ? 0 : fee,
+        finalAmount: isReferralApplied ? subtotal : total,
         deliveryTime: vendor?.slotEnabled ? `Slot: ${selectedSlotData.time}` : deliveryTime,
         scheduledDate: selectedSlotData?.date || null,
         scheduledSlot: selectedSlotData?.time || null,
-        slotDateTime: selectedSlotData?.dateTime || null
+        slotDateTime: selectedSlotData?.dateTime || null,
+        appliedReferralCode: isReferralApplied ? referralInput.trim().toUpperCase() : null
       };
 
+      // If referral is applied, platform fee is 0. Bypassing online payment completely!
+      if (isReferralApplied && paymentMethod !== 'wallet') {
+        const directRes = await api.post('/orders', payload);
+        if (directRes.data.success) {
+          const order = directRes.data.data;
+          setCustomerSession({ name: guestInfo.name, phone: guestInfo.phone });
+          localStorage.setItem("ql_last_order_id", order.id);
+
+          clearCart();
+          closeCheckout();
+
+          // 🔥 Trigger vendor refresh real-time
+          window.dispatchEvent(new Event("orderPlaced"));
+
+          navigate(`/order-status/${order.id}`);
+        } else {
+          setError(directRes.data.message || 'Failed to place order');
+        }
+        return;
+      }
 
       if (paymentMethod === 'wallet') {
         const clientOrderId = `${walletCustomerId}-${Date.now()}`;
         const res = await api.post('/payment/wallet-pay', {
           userId: walletCustomerId,
-          commissionAmount: fee,
+          commissionAmount: isReferralApplied ? 0 : fee,
           orderData: { ...payload, clientOrderId }
         });
         
@@ -308,6 +375,43 @@ export default function CheckoutModal() {
             </p>
           </div>
 
+          {/* Referral Code Section */}
+          <div className="space-y-4 mb-6 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider">🎁 Referral Code</h3>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter CUST-XXXXX code"
+                autoComplete="off"
+                value={referralInput}
+                disabled={isReferralApplied}
+                onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
+                className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#d4ff00] flex-1 transition-colors font-mono"
+              />
+              {isReferralApplied ? (
+                <Button variant="danger" size="sm" onClick={handleRemoveReferral}>
+                  Remove
+                </Button>
+              ) : (
+                <Button 
+                  size="sm" 
+                  onClick={handleApplyReferral} 
+                  disabled={!referralInput.trim() || !guestInfo.phone.trim() || referralLoading}
+                >
+                  {referralLoading ? 'Checking...' : 'Apply'}
+                </Button>
+              )}
+            </div>
+            {referralError && (
+              <p className="text-xs font-bold text-red-500 ml-1">{referralError}</p>
+            )}
+            {isReferralApplied && (
+              <p className="text-xs font-bold text-emerald-500 ml-1 animate-pulse">
+                ✅ Platform fee waived using referral code!
+              </p>
+            )}
+          </div>
+
           <div className="space-y-2 mb-6 max-h-48 overflow-y-auto pr-1">
             {items.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
@@ -339,25 +443,25 @@ export default function CheckoutModal() {
                 </div>
               </label>
 
-              <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${paymentMethod === 'wallet' ? 'border-[#d4ff00] bg-[#d4ff00]/5' : 'border-zinc-200 dark:border-zinc-800 hover:border-[#d4ff00]/40'} ${walletBalance === null || walletBalance < fee ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <label className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${paymentMethod === 'wallet' ? 'border-[#d4ff00] bg-[#d4ff00]/5' : 'border-zinc-200 dark:border-zinc-800 hover:border-[#d4ff00]/40'} ${walletBalance === null || walletBalance < (isReferralApplied ? 0 : fee) ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="wallet"
                   checked={paymentMethod === 'wallet'}
                   onChange={() => {
-                    if (walletBalance !== null && walletBalance >= fee) {
+                    if (walletBalance !== null && walletBalance >= (isReferralApplied ? 0 : fee)) {
                       setPaymentMethod('wallet');
                     }
                   }}
-                  disabled={walletBalance === null || walletBalance < fee}
+                  disabled={walletBalance === null || walletBalance < (isReferralApplied ? 0 : fee)}
                   className="accent-[#d4ff00]"
                 />
                 <div className="flex-1">
                   <p className="text-xs font-bold text-zinc-900 dark:text-white">Pay with Wallet</p>
                   {walletBalance !== null ? (
-                    <p className={`text-[10px] font-bold mt-0.5 ${walletBalance >= fee ? 'text-emerald-500' : 'text-red-500'}`}>
-                      Bal: {formatCurrency(walletBalance)} {walletBalance < fee && '(Low)'}
+                    <p className={`text-[10px] font-bold mt-0.5 ${walletBalance >= (isReferralApplied ? 0 : fee) ? 'text-emerald-500' : 'text-red-500'}`}>
+                      Bal: {formatCurrency(walletBalance)} {walletBalance < (isReferralApplied ? 0 : fee) && '(Low)'}
                     </p>
                   ) : (
                     <p className="text-[10px] text-zinc-500">Checking balance...</p>
@@ -374,7 +478,14 @@ export default function CheckoutModal() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-zinc-500">Platform Fee (Pay Online Now)</span>
-              <span className="font-black text-[#8cb800] dark:text-[#d4ff00]">{formatCurrency(fee)}</span>
+              {isReferralApplied ? (
+                <div className="flex items-center gap-2">
+                  <span className="line-through text-zinc-400 font-medium">{formatCurrency(fee)}</span>
+                  <span className="font-black text-emerald-500">{formatCurrency(0)}</span>
+                </div>
+              ) : (
+                <span className="font-black text-[#8cb800] dark:text-[#d4ff00]">{formatCurrency(fee)}</span>
+              )}
             </div>
             <div className="pt-3 border-t border-dashed border-zinc-200 dark:border-zinc-700">
               {paymentMethod === 'wallet' ? (
@@ -384,9 +495,9 @@ export default function CheckoutModal() {
                       <p className="text-[10px] uppercase font-black text-emerald-500 tracking-widest">Pay with Wallet</p>
                       <p className="text-xs text-zinc-500">Will be deducted</p>
                     </div>
-                    <span className="text-lg font-black text-emerald-400">{formatCurrency(fee)}</span>
+                    <span className="text-lg font-black text-emerald-400">{isReferralApplied ? formatCurrency(0) : formatCurrency(fee)}</span>
                   </div>
-                  <p className="text-xs font-bold text-emerald-500 ml-1">Wallet will deduct only {formatCurrency(fee)}</p>
+                  <p className="text-xs font-bold text-emerald-500 ml-1">Wallet will deduct only {isReferralApplied ? formatCurrency(0) : formatCurrency(fee)}</p>
                 </div>
               ) : (
                 <>
@@ -395,7 +506,7 @@ export default function CheckoutModal() {
                       <p className="text-[10px] uppercase font-black text-[#8cb800] dark:text-[#d4ff00] tracking-widest">Pay Now Online</p>
                       <p className="text-xs text-zinc-500">Platform fee</p>
                     </div>
-                    <span className="text-lg font-black text-zinc-900 dark:text-white">{formatCurrency(fee)}</span>
+                    <span className="text-lg font-black text-zinc-900 dark:text-white">{isReferralApplied ? formatCurrency(0) : formatCurrency(fee)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 mt-2 rounded-xl bg-zinc-100/50 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-700">
                     <div>
@@ -415,7 +526,7 @@ export default function CheckoutModal() {
             <Button variant="outline" fullWidth disabled={loading} onClick={() => { closeCheckout(); openCart(); }}>
               Adjust Order
             </Button>
-            <Button fullWidth loading={loading} onClick={handleContinue} disabled={items.length === 0 || (paymentMethod === 'wallet' && (walletBalance === null || walletBalance < fee))}>
+            <Button fullWidth loading={loading} onClick={handleContinue} disabled={items.length === 0 || (paymentMethod === 'wallet' && (walletBalance === null || walletBalance < (isReferralApplied ? 0 : fee)))}>
               {loading ? "Processing..." : "Verify & Place Order"}
             </Button>
           </div>
