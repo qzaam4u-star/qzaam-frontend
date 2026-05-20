@@ -23,6 +23,10 @@ export default function VendorDashboard() {
   const [showInstructions, setShowInstructions] = useState(false);
   const [stylists, setStylists] = useState([]);
   const [tokenModal, setTokenModal] = useState({ isOpen: false, type: '', id: '', token: '' });
+  const [reviews, setReviews] = useState([]);
+  const [reviewSummary, setReviewSummary] = useState(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewFilter, setReviewFilter] = useState('all');
 
   
   const audioRef = useRef(null);
@@ -100,6 +104,20 @@ export default function VendorDashboard() {
       setStylists(res.data.data || []);
     } catch (err) {
       console.error('Failed to fetch stylists');
+    }
+  };
+
+  const fetchReviews = async () => {
+    if (!localStorage.getItem('ql_token')) return;
+    setReviewsLoading(true);
+    try {
+      const res = await api.get('/vendor/reviews');
+      setReviews(res.data.data?.reviews || []);
+      setReviewSummary(res.data.data?.summary || null);
+    } catch (err) {
+      console.error('Failed to fetch reviews');
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -264,6 +282,12 @@ export default function VendorDashboard() {
           className={`px-6 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'settings' ? 'bg-[#d4ff00] text-black shadow-lg shadow-[#d4ff00]/20' : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-white'}`}
         >
           Settings
+        </button>
+        <button 
+          onClick={() => { setActiveTab('reviews'); fetchReviews(); }}
+          className={`px-6 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'reviews' ? 'bg-amber-400 text-black shadow-lg shadow-amber-400/20' : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-white'}`}
+        >
+          ⭐ Reviews
         </button>
       </div>
 
@@ -865,6 +889,134 @@ export default function VendorDashboard() {
         </div>
       )}
 
+      {activeTab === 'reviews' && (
+        <div className="max-w-4xl mx-auto">
+          {/* Summary Cards */}
+          {reviewSummary && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+              <div className="p-5 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-center">
+                <p className="text-3xl font-black text-amber-400">{reviewSummary.avgRating}</p>
+                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Avg Rating</p>
+                <StarRating rating={parseFloat(reviewSummary.avgRating)} size="sm" className="justify-center mt-1" />
+              </div>
+              <div className="p-5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-center">
+                <p className="text-3xl font-black text-zinc-900 dark:text-white">{reviewSummary.total}</p>
+                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Total Reviews</p>
+              </div>
+              <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                <p className="text-3xl font-black text-emerald-500">{reviewSummary.positivePercent}%</p>
+                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Positive</p>
+              </div>
+              <div className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-center">
+                <p className="text-3xl font-black text-blue-500">{reviewSummary.ratedOrders + reviewSummary.ratedBookings}</p>
+                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Rated Orders</p>
+              </div>
+            </div>
+          )}
+
+          {/* Filters */}
+          <div className="flex gap-2 mb-6 flex-wrap">
+            {['all', 'food', 'salon', '5star', 'recent'].map(f => (
+              <button
+                key={f}
+                onClick={() => setReviewFilter(f)}
+                className={`px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                  reviewFilter === f
+                    ? 'bg-amber-400 text-black shadow-lg shadow-amber-400/20'
+                    : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
+                }`}
+              >
+                {f === 'all' ? 'All' : f === 'food' ? '🍔 Food' : f === 'salon' ? '💇 Salon' : f === '5star' ? '⭐ 5 Star' : '🕐 Recent'}
+              </button>
+            ))}
+          </div>
+
+          {/* Reviews List */}
+          {reviewsLoading ? (
+            <div className="flex justify-center py-20">
+              <div className="w-10 h-10 border-4 border-amber-400/20 border-t-amber-400 rounded-full animate-spin" />
+            </div>
+          ) : (() => {
+            const filtered = reviews.filter(r => {
+              if (reviewFilter === 'food') return !!r.orderId;
+              if (reviewFilter === 'salon') return !!r.bookingId;
+              if (reviewFilter === '5star') return r.rating === 5;
+              if (reviewFilter === 'recent') {
+                const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                return new Date(r.createdAt) >= sevenDaysAgo;
+              }
+              return true;
+            });
+
+            if (filtered.length === 0) return (
+              <div className="py-20 flex flex-col items-center gap-4 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl">
+                <span className="text-5xl">⭐</span>
+                <p className="font-black text-zinc-500 text-center">
+                  {reviews.length === 0 ? 'No reviews yet.' : 'No reviews match this filter.'}
+                </p>
+                <p className="text-xs text-zinc-400 text-center max-w-xs">
+                  {reviews.length === 0 ? 'When customers rate your orders or services, they will appear here.' : 'Try a different filter.'}
+                </p>
+              </div>
+            );
+
+            return (
+              <div className="space-y-4">
+                {filtered.map(review => {
+                  const isFood = !!review.orderId;
+                  const customerInitials = (review.customer?.name || 'G').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                  const dateStr = new Date(review.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                  const amount = review.order?.totalAmount ?? review.booking?.totalAmount ?? 0;
+                  const serviceLabel = isFood
+                    ? (Array.isArray(review.order?.items) ? review.order.items.map(i => i.name).join(', ') : 'Food Order')
+                    : (Array.isArray(review.booking?.services) ? review.booking.services.map(s => s.name).join(', ') : 'Salon Service');
+
+                  return (
+                    <div key={review.id} className="p-5 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-amber-400/40 transition-all shadow-sm">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-sm font-black text-amber-600 dark:text-amber-400 shrink-0">
+                          {customerInitials}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                              <p className="font-black text-zinc-900 dark:text-white text-sm">{review.customer?.name || 'Customer'}</p>
+                              <StarRating rating={review.rating} size="sm" />
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-lg ${
+                                isFood ? 'bg-[#d4ff00]/10 text-[#8cb800] dark:text-[#d4ff00] border border-[#d4ff00]/20' : 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+                              }`}>
+                                {isFood ? '🍔 Food' : '💇 Salon'}
+                              </span>
+                              <p className="text-xs font-black text-zinc-500 mt-1">{formatCurrency(amount)}</p>
+                            </div>
+                          </div>
+                          {review.comment && (
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">"{review.comment}"</p>
+                          )}
+                          <div className="flex items-center gap-3 mt-3 flex-wrap">
+                            <p className="text-[10px] text-zinc-400 font-medium truncate max-w-[180px]">{serviceLabel}</p>
+                            <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                            <p className="text-[10px] text-zinc-400">{dateStr}</p>
+                            {!isFood && review.booking?.stylist?.name && (
+                              <>
+                                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                                <p className="text-[10px] text-zinc-400">✂️ {review.booking.stylist.name}</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
       <VendorInstructionsModal 
         isOpen={showInstructions} 
         onClose={handleCloseInstructions} 
@@ -1143,3 +1295,16 @@ function SalonServiceCard({ booking, children, stylists, onAssignStylist }) {
   );
 }
 
+function StarRating({ rating, size = 'md', className = '' }) {
+  const filled = Math.round(rating);
+  const sizeClass = size === 'sm' ? 'text-xs' : 'text-base';
+  return (
+    <div className={`flex items-center gap-0.5 ${sizeClass} ${className}`}>
+      {[1, 2, 3, 4, 5].map(i => (
+        <span key={i} className={i <= filled ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-700'}>
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
