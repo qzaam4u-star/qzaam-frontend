@@ -55,8 +55,20 @@ export default function AdminSidebar({ onClose }) {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-zinc-200 dark:border-zinc-800">
+      {/* Change Password + Logout */}
+      <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 space-y-1">
+        <Link
+          to="/admin/change-password"
+          onClick={onClose}
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group ${
+            location.pathname === '/admin/change-password'
+              ? 'bg-[#d4ff00] text-black shadow-[0_0_20px_rgba(212,255,0,0.2)]'
+              : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white'
+          }`}
+        >
+          <span className={`text-lg transition-transform group-hover:scale-110 ${location.pathname === '/admin/change-password' ? 'filter invert' : ''}`}>🔐</span>
+          Change Password
+        </Link>
         <Link
           to="/admin/logout"
           onClick={onClose}

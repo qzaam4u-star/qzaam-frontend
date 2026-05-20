@@ -20,6 +20,7 @@ import ReportsPage from './pages/admin/ReportsPage';
 import ComplaintsPage from './pages/admin/ComplaintsPage';
 import SettingsPage from './pages/admin/SettingsPage';
 import LogoutPage from './pages/admin/LogoutPage';
+import AdminChangePasswordPage from './pages/admin/AdminChangePasswordPage';
 import CustomerOrdersPage from './pages/customer/CustomerOrdersPage';
 import HelpDeskPage from './pages/HelpDeskPage';
 import VendorDashboard from './pages/vendor/VendorDashboard';
@@ -193,6 +194,14 @@ export default function App() {
                     } 
                   />
                   <Route path="/admin/logout" element={<LogoutPage />} />
+                  <Route 
+                    path="/admin/change-password" 
+                    element={
+                      <ProtectedRoute roleRequired="admin">
+                        <AdminChangePasswordPage />
+                      </ProtectedRoute>
+                    } 
+                  />
                   <Route 
                     path="/vendor/dashboard" 
                     element={

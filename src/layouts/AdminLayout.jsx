@@ -17,6 +17,7 @@ export default function AdminLayout({ children }) {
     if (path.includes('reports')) return 'Analytics & Reports';
     if (path.includes('complaints')) return 'Customer Support';
     if (path.includes('settings')) return 'System Settings';
+    if (path.includes('change-password')) return 'Change Password';
     return 'Dashboard Overview';
   };
 
