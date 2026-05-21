@@ -15,8 +15,9 @@ export default function WalletPage() {
   const [copied, setCopied] = useState(false);
 
   // Referral System States
-  const [totalReferrals, setTotalReferrals] = useState(0);
-  const [rewardsEarned, setRewardsEarned] = useState(0);
+  const [totalSuccessfulReferrals, setTotalSuccessfulReferrals] = useState(0);
+  const [referralsRemaining, setReferralsRemaining] = useState(5);
+  const [giftHamperEligible, setGiftHamperEligible] = useState(false);
   const [referralsHistory, setReferralsHistory] = useState([]);
 
   const customer = JSON.parse(localStorage.getItem('ql_customer') || '{}');
@@ -31,8 +32,9 @@ export default function WalletPage() {
           if (res.data.referralCode) {
             setReferralCode(res.data.referralCode);
           }
-          setTotalReferrals(res.data.totalReferrals || 0);
-          setRewardsEarned(res.data.rewardsEarned || 0);
+          setTotalSuccessfulReferrals(res.data.totalSuccessfulReferrals || 0);
+          setReferralsRemaining(res.data.referralsRemaining !== undefined ? res.data.referralsRemaining : 5);
+          setGiftHamperEligible(res.data.giftHamperEligible || false);
           setReferralsHistory(res.data.referralsHistory || []);
         })
         .catch(err => {
@@ -198,17 +200,29 @@ export default function WalletPage() {
             Qzaam Referral Code
           </div>
           <h1 className="text-4xl font-black text-zinc-900 dark:text-white leading-tight">
-            Gift <span className="text-[#8cb800] dark:text-[#d4ff00]">{referralCode.startsWith('VENDOR-') ? '₹100' : 'Waived Fee'}</span>
+            {referralCode.startsWith('VENDOR-') ? (
+              <>Gift <span className="text-[#8cb800] dark:text-[#d4ff00]">₹100</span></>
+            ) : (
+              <>Earn <span className="text-[#8cb800] dark:text-[#d4ff00]">Gifts</span></>
+            )}
           </h1>
 
           <Card className="p-6 sm:p-8 bg-zinc-50 dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 shadow-2xl flex flex-col items-center justify-center text-center space-y-6">
             <div>
-              <h3 className="text-xl font-bold text-zinc-900 dark:text-white">Your Unique Referral Code</h3>
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
+                {referralCode.startsWith('VENDOR-') ? 'Your Unique Referral Code' : '🎁 Invite Friends & Earn Gifts'}
+              </h3>
               <p className="text-sm text-zinc-500 mt-1">
                 {referralCode.startsWith('VENDOR-') 
-                  ? 'Share with friends to onboard as vendors' 
-                  : 'Invite friends! They get their platform fee waived, and you get ₹50 when they order.'}
+                  ? 'Share with friends to onboard as vendors.' 
+                  : 'Share your referral code with friends. When 5 friends complete their first order or booking, you become eligible for an exclusive Gift Hamper.'}
               </p>
+              {!referralCode.startsWith('VENDOR-') && (
+                <div className="mt-3 p-3 bg-[#d4ff00]/5 border border-[#d4ff00]/20 rounded-xl text-left">
+                  <p className="text-xs font-black text-[#8cb800] dark:text-[#d4ff00] uppercase tracking-wider">Friend Benefit:</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">Friends get platform fee waived on their first order or booking.</p>
+                </div>
+              )}
             </div>
 
             {referralCode ? (
@@ -230,14 +244,57 @@ export default function WalletPage() {
           </Card>
 
           {referralCode && !referralCode.startsWith('VENDOR-') && (
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
-                <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Total Referred</p>
-                <h4 className="text-2xl font-black text-zinc-900 dark:text-white mt-1">{totalReferrals} Friend{totalReferrals !== 1 ? 's' : ''}</h4>
-              </Card>
-              <Card className="p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
-                <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Rewards Earned</p>
-                <h4 className="text-2xl font-black text-emerald-500 mt-1">₹{rewardsEarned.toFixed(2)}</h4>
+            <div className="space-y-4">
+              {/* Celebratory Unlocked Card or Referral Progress Tracker */}
+              <Card className={`p-6 border-2 transition-all duration-500 relative overflow-hidden ${
+                giftHamperEligible 
+                  ? 'border-[#d4ff00] bg-gradient-to-br from-zinc-900 to-black text-white shadow-[0_0_30px_rgba(212,255,0,0.15)]' 
+                  : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800'
+              }`}>
+                {giftHamperEligible && (
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4ff00]/10 rounded-full blur-3xl -mr-16 -mt-16 animate-pulse" />
+                )}
+                
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className={`text-lg font-black tracking-tight ${giftHamperEligible ? 'text-[#d4ff00]' : 'text-zinc-900 dark:text-white'}`}>
+                      {giftHamperEligible ? '🎁 Gift Hamper Unlocked!' : 'Referral Campaign Progress'}
+                    </h4>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                      {giftHamperEligible 
+                        ? 'Congratulations! You are now eligible for an exclusive Gift Hamper.' 
+                        : 'Refer 5 friends to unlock your exclusive gift.'}
+                    </p>
+                  </div>
+                  <span className="text-2xl animate-bounce">🎁</span>
+                </div>
+
+                {/* Progress bar with Animated Visuals */}
+                <div className="space-y-2 mt-4">
+                  <div className="flex justify-between text-xs font-bold">
+                    <span className={giftHamperEligible ? 'text-[#d4ff00]' : 'text-zinc-600 dark:text-zinc-300'}>
+                      {Math.min(5, totalSuccessfulReferrals)} / 5 Completed
+                    </span>
+                    <span className="text-zinc-500 dark:text-zinc-400">
+                      {Math.round(Math.min(100, (totalSuccessfulReferrals / 5) * 100))}%
+                    </span>
+                  </div>
+                  
+                  <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-3 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-[#d4ff00] to-[#8cb800] h-full rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${Math.min(100, (totalSuccessfulReferrals / 5) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Over-referral Details */}
+                <div className="flex justify-between items-center mt-5 pt-4 border-t border-zinc-200 dark:border-zinc-800/60 text-xs">
+                  <span className="text-zinc-500 dark:text-zinc-400">Total Friends Referred</span>
+                  <span className={`font-black ${giftHamperEligible ? 'text-[#d4ff00]' : 'text-zinc-900 dark:text-white'}`}>
+                    {totalSuccessfulReferrals} Friend{totalSuccessfulReferrals !== 1 ? 's' : ''}
+                  </span>
+                </div>
               </Card>
             </div>
           )}
@@ -248,7 +305,7 @@ export default function WalletPage() {
             {referralCode.startsWith('VENDOR-') ? (
               <p>• Referral rewards are granted instantly when the referred vendor processes their first 10 orders.</p>
             ) : (
-              <p>• Referral rewards (₹50) are credited once your referred friend's first food order or salon booking transitions to "completed" status.</p>
+              <p>• Milestone rewards are earned when 5 unique referred friends complete their first food order or salon booking.</p>
             )}
           </div>
         </div>
@@ -310,10 +367,9 @@ export default function WalletPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#d4ff00]/10 text-[#8cb800] dark:text-[#d4ff00] border border-[#d4ff00]/20">
                         {ref.status}
                       </span>
-                      <p className="text-xs font-black text-emerald-500 mt-1">+₹{ref.rewardAmount.toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
