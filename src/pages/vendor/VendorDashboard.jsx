@@ -329,7 +329,7 @@ export default function VendorDashboard() {
                       )}
                     </SalonServiceCard>
                   ))}
-                  {upcomingBookings.length === 0 && <EmptyState text="No upcoming appointments." />}
+                  {upcomingBookings.length === 0 && <EmptyState text="No upcoming appointments yet" subtitle="All your upcoming appointments will appear here." variant="salon" />}
                 </div>
               </div>
 
@@ -541,10 +541,13 @@ export default function VendorDashboard() {
           <h2 className="text-xl font-black mb-6 text-zinc-900 dark:text-white">{isSalon ? 'Upcoming Appointments' : 'Upcoming Scheduled Orders'}</h2>
 
           {(isSalon ? upcomingBookings.length === 0 : scheduledOrders.length === 0) ? (
-            <div className="text-center py-20 text-zinc-400">
-              <div className="text-5xl mb-4">{isSalon ? '💇' : '📅'}</div>
-              <p className="font-bold">No {isSalon ? 'upcoming appointments' : 'scheduled orders'} yet.</p>
-            </div>
+            <EmptyState
+              text={isSalon ? 'No upcoming appointments yet' : 'No scheduled orders yet'}
+              subtitle={isSalon
+                ? 'All your upcoming appointments will appear here.'
+                : 'Scheduled orders from customers will show up here.'}
+              variant={isSalon ? 'salon' : 'calendar'}
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Salon Bookings */}
