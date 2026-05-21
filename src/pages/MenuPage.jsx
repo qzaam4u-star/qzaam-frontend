@@ -137,7 +137,12 @@ export default function MenuPage() {
           waitTime: vendorRes.data.data.averagePrepTime || 15,
           rating: reviewsRes.data.avgRating || '0.0',
           reviews: reviewsRes.data.totalReviews || 0,
-          vendorType: vendorRes.data.data.vendorType || 'food'
+          vendorType: vendorRes.data.data.vendorType || 'food',
+          slotEnabled: vendorRes.data.data.slotEnabled,
+          openingTime: vendorRes.data.data.openingTime,
+          closingTime: vendorRes.data.data.closingTime,
+          slotDuration: vendorRes.data.data.slotDuration,
+          maxOrdersPerSlot: vendorRes.data.data.maxOrdersPerSlot
         });
       } catch {
         setError('Failed to fetch menu or store details.');

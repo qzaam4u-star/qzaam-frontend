@@ -39,10 +39,12 @@ export default function VendorDashboard() {
       if (!localStorage.getItem('ql_token')) return;
       try {
         const res = await api.get('/vendor/profile');
-        const freshVendorType = res.data.data?.vendorType || 'food';
-        setVendorType(freshVendorType);
-        if (setUser) {
-          setUser(prev => prev ? { ...prev, vendorType: freshVendorType } : prev);
+        if (res.data.success && res.data.data) {
+          const freshVendorType = res.data.data.vendorType || 'food';
+          setVendorType(freshVendorType);
+          if (setUser) {
+            setUser(res.data.data);
+          }
         }
       } catch (e) {
         console.error('Failed to sync profile', e);
