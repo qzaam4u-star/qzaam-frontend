@@ -349,7 +349,7 @@ export default function VendorDashboard() {
                 <div className="space-y-4">
                   {liveBookings.map(booking => {
                     const isBeforeService = now < new Date(booking.slotTime);
-                    const slotTimeString = new Date(booking.slotTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                    const slotTimeString = new Date(booking.slotTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' });
 
                     return (
                       <SalonServiceCard 
@@ -418,10 +418,10 @@ export default function VendorDashboard() {
                 <div className="space-y-4">
                   {completedBookings.slice(0, 10).map(booking => {
                     const slotDate = new Date(booking.slotTime);
-                    let slotStr = slotDate.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                    let slotStr = slotDate.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
                     if (booking.slotEndTime) {
                       const endDate = new Date(booking.slotEndTime);
-                      slotStr = `${slotStr} - ${endDate.toLocaleString('en-IN', { timeStyle: 'short' })}`;
+                      slotStr = `${slotStr} - ${endDate.toLocaleString('en-IN', { timeStyle: 'short', timeZone: 'Asia/Kolkata' })}`;
                     }
                     return (
                       <div key={booking.id} className="p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 rounded-2xl flex justify-between items-center text-sm opacity-70 hover:opacity-100 transition-opacity">
@@ -1130,17 +1130,17 @@ function OrderCard({ order, children }) {
         </div>
         <div className="text-right">
           <p className="text-sm font-black text-[#d4ff00]">{formatCurrency(order.totalAmount)}</p>
-          <p className="text-[10px] text-zinc-500 mt-1">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+          <p className="text-[10px] text-zinc-500 mt-1">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}</p>
           {order.scheduledTime ? (
             <div className={`mt-2 border rounded-lg p-2 text-right ${order.status === 'upcoming' ? 'bg-purple-500/10 border-purple-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
               <p className={`text-[8px] uppercase font-black tracking-widest ${order.status === 'upcoming' ? 'text-purple-500' : 'text-emerald-500'}`}>
                 {order.status === 'upcoming' ? 'Scheduled Pickup' : 'Activated Order'}
               </p>
               <p className={`text-xs font-black ${order.status === 'upcoming' ? 'text-purple-500' : 'text-emerald-500'}`}>
-                {new Date(order.scheduledTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} · {new Date(order.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(order.scheduledTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })} · {new Date(order.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}
               </p>
               {order.status === 'upcoming' && order.activationTime && (
-                <p className="text-[8px] font-bold text-zinc-400 mt-1 uppercase">Activation: {new Date(order.activationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                <p className="text-[8px] font-bold text-zinc-400 mt-1 uppercase">Activation: {new Date(order.activationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}</p>
               )}
             </div>
           ) : (
@@ -1209,10 +1209,10 @@ function SalonServiceCard({ booking, children, stylists, onAssignStylist }) {
   };
 
   const slotDate = new Date(booking.slotTime);
-  let slotStr = slotDate.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+  let slotStr = slotDate.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
   if (booking.slotEndTime) {
     const endDate = new Date(booking.slotEndTime);
-    slotStr = `${slotStr} - ${endDate.toLocaleString('en-IN', { timeStyle: 'short' })}`;
+    slotStr = `${slotStr} - ${endDate.toLocaleString('en-IN', { timeStyle: 'short', timeZone: 'Asia/Kolkata' })}`;
   }
 
   return (

@@ -226,6 +226,8 @@ export default function SalonBookingPage({ vendor, vendorId }) {
     platformFee: isReferralApplied ? 0 : backendTotals.platformFee,
     finalAmount: isReferralApplied ? backendTotals.subtotal : backendTotals.finalTotal,
     slotTime: new Date(`${selectedDate}T${selectedSlot}:00`).toISOString(),
+    scheduledDate: selectedDate,
+    scheduledSlot: selectedSlot,
     stylistId: selectedStylist?.id === 'anyone' ? null : selectedStylist?.id,
     stylistPreference: selectedStylist?.id === 'anyone' ? 'anyone' : 'specific',
     appliedReferralCode: isReferralApplied ? referralInput.trim().toUpperCase() : null

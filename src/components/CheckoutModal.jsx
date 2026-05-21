@@ -169,7 +169,6 @@ export default function CheckoutModal() {
         deliveryTime: vendor?.slotEnabled ? `Slot: ${selectedSlotData.time}` : deliveryTime,
         scheduledDate: selectedSlotData?.date || null,
         scheduledSlot: selectedSlotData?.time || null,
-        slotDateTime: selectedSlotData?.dateTime || null,
         appliedReferralCode: isReferralApplied ? referralInput.trim().toUpperCase() : null
       };
 
@@ -351,7 +350,10 @@ export default function CheckoutModal() {
                 />
                 {selectedSlotData && (
                   <p className="mt-3 text-xs font-bold text-emerald-500 bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-500/20 text-center animate-in fade-in zoom-in duration-300">
-                    Pickup Scheduled: {new Date(selectedSlotData.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} at {selectedSlotData.time}
+                    Pickup Scheduled: {(() => {
+                      const [y, m, d] = selectedSlotData.date.split('-').map(Number);
+                      return new Date(y, m - 1, d).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+                    })()} at {selectedSlotData.time}
                   </p>
                 )}
               </div>

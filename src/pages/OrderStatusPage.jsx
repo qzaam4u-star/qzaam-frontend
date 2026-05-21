@@ -220,10 +220,10 @@ export default function OrderStatusPage() {
           </div>
           <h1 className="text-3xl font-black text-purple-500">Order Scheduled</h1>
           <p className="text-zinc-900 dark:text-white font-bold mt-4 text-xl">
-            Scheduled for {new Date(order.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            Scheduled for {new Date(order.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}
           </p>
           <p className="text-zinc-500 mt-2 max-w-xs leading-relaxed">
-            Your order is scheduled for {new Date(order.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
+            Your order is scheduled for {new Date(order.scheduledTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}.
             Kitchen preparation will begin closer to your slot.
           </p>
           

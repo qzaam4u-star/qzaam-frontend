@@ -150,10 +150,10 @@ export default function BookingStatusPage() {
 
   const currentStep = STATUS_STEPS[booking.status] || 1;
   const slotDate = new Date(booking.slotTime);
-  let slotStr = slotDate.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+  let slotStr = slotDate.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
   if (booking.slotEndTime) {
     const endDate = new Date(booking.slotEndTime);
-    const endStr = endDate.toLocaleString('en-IN', { timeStyle: 'short' });
+    const endStr = endDate.toLocaleString('en-IN', { timeStyle: 'short', timeZone: 'Asia/Kolkata' });
     slotStr = `${slotStr} - ${endStr}`;
   }
 
