@@ -18,6 +18,8 @@ import PaymentsPage from './pages/admin/PaymentsPage';
 import CommissionPage from './pages/admin/CommissionPage';
 import ReportsPage from './pages/admin/ReportsPage';
 import ComplaintsPage from './pages/admin/ComplaintsPage';
+import ReferralsPage from './pages/admin/ReferralsPage';
+import ReviewsPage from './pages/admin/ReviewsPage';
 import SettingsPage from './pages/admin/SettingsPage';
 import LogoutPage from './pages/admin/LogoutPage';
 import AdminChangePasswordPage from './pages/admin/AdminChangePasswordPage';
@@ -191,6 +193,22 @@ export default function App() {
                     element={
                       <ProtectedRoute roleRequired="admin">
                         <ComplaintsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/referrals" 
+                    element={
+                      <ProtectedRoute roleRequired="admin">
+                        <ReferralsPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/reviews" 
+                    element={
+                      <ProtectedRoute roleRequired="admin">
+                        <ReviewsPage />
                       </ProtectedRoute>
                     } 
                   />
