@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/formatCurrency';
 import Button from '../components/Button';
 import CustomerLoginModal from '../components/CustomerLoginModal';
+import WishlistButton from '../components/WishlistButton';
 import toast from 'react-hot-toast';
 
 const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY;
@@ -373,25 +374,30 @@ export default function SalonBookingPage({ vendor, vendorId }) {
       {/* Header */}
       <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-28 pb-6">
         <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/20 flex items-center justify-center text-2xl">
-              💇
-            </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-black text-zinc-900 dark:text-white">{vendor?.outletName || 'Salon'}</h1>
-              <p className="text-sm text-zinc-500 truncate">{vendor?.address?.split('\n')[0]}</p>
-              <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <span key={star} className={`text-sm ${star <= Math.round(parseFloat(ratingData.avgRating)) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-700'}`}>★</span>
-                  ))}
-                  <span className="text-sm font-black text-zinc-900 dark:text-white ml-1">{ratingData.avgRating}</span>
-                  <span className="text-xs text-zinc-400">({ratingData.totalReviews} review{ratingData.totalReviews !== 1 ? 's' : ''})</span>
-                </div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
-                  <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse" /> Open · Book a slot
-                </span>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 flex-1 min-w-0">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/20 flex items-center justify-center text-2xl shrink-0">
+                💇
               </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl font-black text-zinc-900 dark:text-white">{vendor?.outletName || 'Salon'}</h1>
+                <p className="text-sm text-zinc-500 truncate">{vendor?.address?.split('\n')[0]}</p>
+                <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <span key={star} className={`text-sm ${star <= Math.round(parseFloat(ratingData.avgRating)) ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-700'}`}>★</span>
+                    ))}
+                    <span className="text-sm font-black text-zinc-900 dark:text-white ml-1">{ratingData.avgRating}</span>
+                    <span className="text-xs text-zinc-400">({ratingData.totalReviews} review{ratingData.totalReviews !== 1 ? 's' : ''})</span>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse" /> Open · Book a slot
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="shrink-0">
+              <WishlistButton vendorId={vendorId} vendorType="salon" />
             </div>
           </div>
         </div>

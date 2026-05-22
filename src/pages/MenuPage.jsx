@@ -10,6 +10,7 @@ import QuantityStepper from '../components/QuantityStepper';
 import CartDrawer from '../components/CartDrawer';
 import Spinner from '../components/Spinner';
 import SalonBookingPage from './SalonBookingPage';
+import WishlistButton from '../components/WishlistButton';
 import toast from 'react-hot-toast';
 
 function MenuItem({ item }) {
@@ -206,6 +207,7 @@ export default function MenuPage() {
               </div>
             </div>
             <div className="flex items-center gap-2.5 shrink-0 flex-wrap sm:flex-nowrap">
+              <WishlistButton vendorId={vendorData.id} vendorType="food" />
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-sm text-zinc-600 dark:text-zinc-400">
                 <span>📱</span>
                 <span>Scanned via QR</span>

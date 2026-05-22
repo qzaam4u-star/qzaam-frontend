@@ -29,6 +29,7 @@ import CreateMenuPage from './pages/vendor/CreateMenuPage';
 import CartPage from './pages/CartPage';
 import ReferVendorPage from './pages/ReferVendorPage';
 import WalletPage from './pages/customer/WalletPage';
+import WishlistPage from './pages/customer/WishlistPage';
 import CustomerHub from './pages/CustomerHub';
 import AboutPage from './pages/AboutPage';
 import BookingStatusPage from './pages/BookingStatusPage';
@@ -102,6 +103,14 @@ export default function App() {
                     element={
                       <CustomerProtectedRoute>
                         <WalletPage />
+                      </CustomerProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/wishlist"
+                    element={
+                      <CustomerProtectedRoute>
+                        <WishlistPage />
                       </CustomerProtectedRoute>
                     }
                   />

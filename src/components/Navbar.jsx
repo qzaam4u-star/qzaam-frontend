@@ -4,6 +4,7 @@ import ThemeToggle from './ThemeToggle';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import CustomerLoginModal from './CustomerLoginModal';
+import api from '../utils/api';
 
 export default function Navbar() {
   const { itemCount, openCart } = useCart();
@@ -13,6 +14,39 @@ export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showCustomerLogin, setShowCustomerLogin] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
+
+  useEffect(() => {
+    if (!customer || !customer.id) {
+      setWishlistCount(0);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchWishlistCount = async () => {
+      try {
+        const res = await api.get(`/wishlist/count?customerId=${customer.id}`);
+        if (res.data.success && isMounted) {
+          setWishlistCount(res.data.count);
+        }
+      } catch (err) {
+        console.error('Failed to fetch wishlist count:', err);
+      }
+    };
+
+    fetchWishlistCount();
+
+    // Listen to updates
+    const handleUpdate = () => {
+      fetchWishlistCount();
+    };
+    window.addEventListener('wishlist-updated', handleUpdate);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('wishlist-updated', handleUpdate);
+    };
+  }, [customer]);
 
 
   useEffect(() => {
@@ -66,6 +100,14 @@ export default function Navbar() {
                   <Link to={menuLink} className={navLinkClass(location.pathname === '/menu')}>Menu</Link>
                   <Link to="/wallet" className={navLinkClass(location.pathname === '/wallet')}>Wallet</Link>
                   <Link to="/refer" className={navLinkClass(location.pathname === '/refer')}>Referral</Link>
+                  <Link to="/wishlist" className={navLinkClass(location.pathname === '/wishlist')}>
+                    Wishlist
+                    {wishlistCount > 0 && (
+                      <span className="ml-1.5 bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </Link>
                   <button 
                     onClick={() => {
                       const lastOrderId = localStorage.getItem('ql_last_order_id');
@@ -139,6 +181,12 @@ export default function Navbar() {
                         className="block px-4 py-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                       >
                         📋 View All Orders
+                      </Link>
+                      <Link
+                        to="/wishlist"
+                        className="block px-4 py-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                      >
+                        ❤️ My Wishlist {wishlistCount > 0 && <span className="ml-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">{wishlistCount}</span>}
                       </Link>
                       <Link
                         to="/wallet"
@@ -251,6 +299,9 @@ export default function Navbar() {
                     <Link to={menuLink} className={mobileNavLinkClass(location.pathname === '/menu')}>Menu</Link>
                     <Link to="/wallet" className={mobileNavLinkClass(location.pathname === '/wallet')}>Wallet</Link>
                     <Link to="/refer" className={mobileNavLinkClass(location.pathname === '/refer')}>Referral</Link>
+                    <Link to="/wishlist" className={mobileNavLinkClass(location.pathname === '/wishlist')}>
+                      Wishlist {wishlistCount > 0 && <span className="ml-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{wishlistCount}</span>}
+                    </Link>
                     <Link to="/your-orders" className={mobileNavLinkClass(location.pathname === '/your-orders')}>Your Orders</Link>
                     <button
                       onClick={() => {
