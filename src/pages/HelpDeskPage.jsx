@@ -12,38 +12,43 @@ const STATUS_STEPS = { pending: 1, accepted: 2, preparing: 3, ready: 4, complete
 export default function HelpDeskPage() {
   const { customer: authCustomer } = useAuth();
   const [orders, setOrders] = useState([]);
+  const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingComplaints, setLoadingComplaints] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isComplaintOpen, setIsComplaintOpen] = useState(false);
 
+  const fetchOrdersAndComplaints = async (phone) => {
+    try {
+      setLoading(true);
+      const ordersRes = await api.get(`/customer/orders?phone=${phone}`);
+      setOrders(ordersRes.data.data || []);
+      
+      setLoadingComplaints(true);
+      const complaintsRes = await api.get(`/complaints?phone=${phone}`);
+      setComplaints(complaintsRes.data.data || []);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+      setLoadingComplaints(false);
+    }
+  };
+
   useEffect(() => {
     const customer = authCustomer || JSON.parse(localStorage.getItem('ql_customer'));
-
     if (!customer?.phone) {
       setShowLogin(true);
       setLoading(false);
       return;
     }
-
-    const fetchOrders = async () => {
-      try {
-        const res = await api.get(`/customer/orders?phone=${customer.phone}`);
-        setOrders(res.data.data || []);
-      } catch (err) {
-        console.error('Error fetching orders:', err);
-        setOrders([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
+    fetchOrdersAndComplaints(customer.phone);
   }, [authCustomer]);
 
   const customer = authCustomer || JSON.parse(localStorage.getItem('ql_customer'));
 
-  if (loading) {
+  if (loading && orders.length === 0) {
     return (
       <div className="min-h-screen bg-white dark:bg-black pt-32 flex flex-col items-center gap-4">
         <Spinner />
@@ -65,7 +70,6 @@ export default function HelpDeskPage() {
           </Link>
         </div>
         <CustomerLoginModal isOpen={showLogin} onClose={() => setShowLogin(false)} isCheckoutFlow={false} />
-
       </div>
     );
   }
@@ -78,9 +82,14 @@ export default function HelpDeskPage() {
             <h1 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">Help Desk</h1>
             <p className="text-zinc-500 mt-2">Select an order to raise a complaint for <span className="font-mono text-[#8cb800] dark:text-[#d4ff00] font-bold">{customer.phone}</span></p>
           </div>
-          <Link to="/">
-            <Button variant="outline" size="sm" className="rounded-xl">Home</Button>
-          </Link>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="rounded-xl" onClick={() => fetchOrdersAndComplaints(customer.phone)}>
+              Refresh 🔄
+            </Button>
+            <Link to="/">
+              <Button variant="outline" size="sm" className="rounded-xl">Home</Button>
+            </Link>
+          </div>
         </div>
 
         {orders.length === 0 ? (
@@ -143,6 +152,64 @@ export default function HelpDeskPage() {
             })}
           </div>
         )}
+
+        {/* Active Support Tickets Section */}
+        <div className="mt-12 border-t border-zinc-200 dark:border-zinc-800 pt-10">
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight mb-6">Support Ticket History</h2>
+          
+          {loadingComplaints ? (
+            <div className="flex justify-center py-8">
+              <Spinner />
+            </div>
+          ) : complaints.length === 0 ? (
+            <div className="py-10 px-8 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl text-center bg-zinc-50/50 dark:bg-zinc-900/30">
+              <p className="text-sm text-zinc-500">You don't have any registered complaints.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {complaints.map((c) => (
+                <div key={c.id} className="p-6 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-3xl transition-all">
+                  <div className="flex items-start justify-between gap-4 mb-3">
+                    <div>
+                      <span className="text-[10px] font-black text-zinc-400 font-mono tracking-widest uppercase block mb-1">Ticket #{c.id.slice(0, 8)}</span>
+                      <h3 className="text-base font-bold text-zinc-900 dark:text-white">{c.subject}</h3>
+                      <p className="text-xs text-zinc-500 mt-1 leading-relaxed">{c.description}</p>
+                    </div>
+                    <div>
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold leading-none capitalize ${
+                        c.status === 'resolved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                        c.status === 'in_progress' || c.status === 'in-progress' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' :
+                        c.status === 'rejected' ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-800/40 dark:text-zinc-400' :
+                        'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                      }`}>
+                        {c.status === 'resolved' ? '🟢 Resolved' :
+                         c.status === 'in_progress' || c.status === 'in-progress' ? '🟡 In Progress' :
+                         c.status === 'rejected' ? '⚪ Rejected' :
+                         '🔴 Open'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col gap-2">
+                    <div className="flex items-center justify-between text-[11px] text-zinc-400 font-medium">
+                      <span>Reported: {new Date(c.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                      {c.updatedAt && (
+                        <span>Last Update: {new Date(c.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                      )}
+                    </div>
+
+                    {c.adminResponse && (
+                      <div className="mt-2 p-4 bg-[#d4ff00]/5 border border-[#d4ff00]/25 rounded-2xl">
+                        <span className="text-[10px] font-black text-[#8cb800] dark:text-[#d4ff00] tracking-widest uppercase block mb-1">Resolution Update / Reply</span>
+                        <p className="text-xs text-zinc-900 dark:text-zinc-200 italic font-medium leading-relaxed">"{c.adminResponse}"</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {selectedOrder && (
@@ -151,6 +218,7 @@ export default function HelpDeskPage() {
           onClose={() => {
             setIsComplaintOpen(false);
             setSelectedOrder(null);
+            fetchOrdersAndComplaints(customer.phone);
           }}
           order={selectedOrder}
           customerPhone={customer.phone}
@@ -159,3 +227,4 @@ export default function HelpDeskPage() {
     </div>
   );
 }
+
