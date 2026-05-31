@@ -60,7 +60,7 @@ export default function MenuPage() {
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const frontendBaseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+  const frontendBaseUrl = import.meta.env.VITE_APP_URL || import.meta.env.VITE_FRONTEND_URL || window.location.origin;
 
   const handleCopyLink = async () => {
     const shareUrl = `${frontendBaseUrl}/menu?vendorId=${vendorIdFromQuery}`;
