@@ -12,6 +12,7 @@ import Spinner from '../components/Spinner';
 import SalonBookingPage from './SalonBookingPage';
 import WishlistButton from '../components/WishlistButton';
 import toast from 'react-hot-toast';
+import VendorDiscoveryPage from './VendorDiscoveryPage';
 
 function MenuItem({ item }) {
   const { addItem, increment, decrement, getItemQuantity } = useCart();
@@ -49,6 +50,13 @@ export default function MenuPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const vendorIdFromQuery = searchParams.get('vendorId');
+
+  // ── Vendor Discovery: if no vendorId, show the discovery page ──────────────
+  // This early return is placed BEFORE any other hooks so React hook call
+  // order is always consistent (vendorIdFromQuery is stable per render).
+  if (!vendorIdFromQuery) {
+    return <VendorDiscoveryPage />;
+  }
   const { setActiveVendorId } = useAuth();
 
   const [items, setItems] = useState([]);
@@ -115,11 +123,8 @@ export default function MenuPage() {
   }, [vendorIdFromQuery, setActiveVendorId, cartItems, clearCart]);
 
   useEffect(() => {
-    if (!vendorIdFromQuery) {
-      setError('No vendor selected. Please scan a valid QR code.');
-      setIsLoading(false);
-      return;
-    }
+    // vendorIdFromQuery is always defined here because the component
+    // returns <VendorDiscoveryPage /> above when it is absent.
     const fetchData = async () => {
       try {
         const [menuRes, vendorRes, reviewsRes] = await Promise.all([
