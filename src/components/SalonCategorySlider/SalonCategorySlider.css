@@ -1,0 +1,48 @@
+.salon-category-slider .slick-slide {
+  padding: 0 8px;
+}
+
+.salon-category-slider .slick-arrow {
+  width: 36px;
+  height: 36px;
+  background: #d4ff00;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.salon-category-slider .slick-arrow:before {
+  color: black;
+  font-size: 16px;
+}
+
+.salon-category-slider .slick-arrow:hover {
+  background: #c0e600;
+}
+
+.salon-category-slider .slick-prev {
+  left: -45px;
+}
+
+.salon-category-slider .slick-next {
+  right: -45px;
+}
+
+.salon-category-slider .slick-track {
+  padding-top: 0.25rem;
+}
+
+/* Hide arrows on mobile screens */
+@media (max-width: 768px) {
+  .salon-category-slider .slick-arrow {
+    display: none !important;
+  }
+}
+
+/* Enhanced styling for selected category */
+.salon-category-slider button:has(+ div) {
+  transition: all 0.3s ease;
+}
+
+.salon-category-slider button:focus {
+  outline: none;
+}
