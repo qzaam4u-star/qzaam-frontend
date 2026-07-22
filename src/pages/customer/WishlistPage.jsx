@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import api from '../../utils/api';
-import Button from '../../components/Button';
-import Card from '../../components/Card';
-import Badge from '../../components/Badge';
-import Spinner from '../../components/Spinner';
-import EmptyState from '../../components/EmptyState';
-import CustomerLoginModal from '../../components/CustomerLoginModal';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../utils/api";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
+import Badge from "../../components/Badge";
+import Spinner from "../../components/Spinner";
+import EmptyState from "../../components/EmptyState";
+import CustomerLoginModal from "../../components/CustomerLoginModal";
+import toast from "react-hot-toast";
 
 export default function WishlistPage() {
   const { customer } = useAuth();
@@ -29,8 +29,8 @@ export default function WishlistPage() {
         setVendors(res.data.data);
       }
     } catch (err) {
-      console.error('Failed to load wishlist:', err);
-      toast.error('Could not load your saved spots.');
+      console.error("Failed to load wishlist:", err);
+      toast.error("Could not load your saved spots.");
     } finally {
       setLoading(false);
     }
@@ -43,24 +43,24 @@ export default function WishlistPage() {
   const handleRemove = async (vendorId, e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!customer || !customer.id) return;
-    
+
     try {
-      const res = await api.post('/wishlist/toggle', {
+      const res = await api.post("/wishlist/toggle", {
         customerId: customer.id,
-        vendorId
+        vendorId,
       });
-      
+
       if (res.data.success && !res.data.isWishlisted) {
         // Fade out transition simulation by updating state
-        setVendors(prev => prev.filter(v => v.id !== vendorId));
-        toast.success('Removed from wishlist');
+        setVendors((prev) => prev.filter((v) => v.id !== vendorId));
+        toast.success("Removed from wishlist");
         // Notify Navbar to update count
-        window.dispatchEvent(new CustomEvent('wishlist-updated'));
+        window.dispatchEvent(new CustomEvent("wishlist-updated"));
       }
     } catch (err) {
-      toast.error('Could not remove vendor. Please try again.');
+      toast.error("Could not remove vendor. Please try again.");
     }
   };
 
@@ -83,18 +83,27 @@ export default function WishlistPage() {
           <div className="w-16 h-16 bg-[#d4ff00]/10 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">
             ❤️
           </div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">Saved Spots</h2>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">
+            Saved Spots
+          </h2>
           <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed mb-8">
-            Create an account or log in to bookmark your favorite food stalls and salon vendors for fast access!
+            Create an account or log in to bookmark your favorite food stalls
+            and salon vendors for fast access!
           </p>
           <Button fullWidth size="lg" onClick={() => setShowLoginModal(true)}>
             Log In / Register
           </Button>
-          <Link to="/" className="block mt-4 text-xs font-bold uppercase tracking-widest text-[#8cb800] dark:text-[#d4ff00] hover:underline">
+          <Link
+            to="/"
+            className="block mt-4 text-xs font-bold uppercase tracking-widest text-[#8cb800] dark:text-[#d4ff00] hover:underline"
+          >
             ← Browse Home
           </Link>
         </div>
-        <CustomerLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+        <CustomerLoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+        />
       </div>
     );
   }
@@ -102,19 +111,21 @@ export default function WishlistPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white pt-28 pb-20 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
-        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-zinc-900 dark:text-white">
-              My <span className="text-[#8cb800] dark:text-[#d4ff00]">Wishlist</span>
+              My{" "}
+              <span className="text-[#8cb800] dark:text-[#d4ff00]">
+                Wishlist
+              </span>
             </h1>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
               Your favorite dining and grooming spots saved in one place.
             </p>
           </div>
           <div className="text-zinc-500 dark:text-zinc-400 text-xs font-black uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 w-fit">
-            ❤️ {vendors.length} saved spot{vendors.length !== 1 ? 's' : ''}
+            ❤️ {vendors.length} saved spot{vendors.length !== 1 ? "s" : ""}
           </div>
         </div>
 
@@ -127,7 +138,10 @@ export default function WishlistPage() {
             />
             <div className="text-center mt-2">
               <Link to="/">
-                <Button size="md" className="px-6 bg-[#d4ff00] text-black font-black hover:bg-[#c0e600]">
+                <Button
+                  size="md"
+                  className="px-6 bg-[#d4ff00] text-black font-black hover:bg-[#c0e600]"
+                >
                   Find Vendors
                 </Button>
               </Link>
@@ -136,8 +150,8 @@ export default function WishlistPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vendors.map((vendor) => {
-              const isFood = vendor.vendorType === 'food';
-              
+              const isFood = vendor.vendorType === "food";
+
               return (
                 <div
                   key={vendor.id}
@@ -152,26 +166,32 @@ export default function WishlistPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className={`w-full h-full flex items-center justify-center text-4xl select-none ${
-                        isFood 
-                          ? 'bg-gradient-to-br from-[#d4ff00]/20 to-[#d4ff00]/5 text-[#8cb800] dark:text-[#d4ff00]' 
-                          : 'bg-gradient-to-br from-purple-500/20 to-pink-500/5 text-purple-500'
-                      }`}>
-                        {isFood ? '🍽️' : '💇'}
+                      <div
+                        className={`w-full h-full flex items-center justify-center text-4xl select-none ${
+                          isFood
+                            ? "bg-gradient-to-br from-[#d4ff00]/20 to-[#d4ff00]/5 text-[#8cb800] dark:text-[#d4ff00]"
+                            : "bg-gradient-to-br from-purple-500/20 to-pink-500/5 text-purple-500"
+                        }`}
+                      >
+                        {isFood ? "🍽️" : "💇"}
                       </div>
                     )}
-                    
+
                     {/* Floating Heart Check Box */}
                     <button
                       onClick={(e) => handleRemove(vendor.id, e)}
                       className="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md hover:bg-black/60 rounded-full text-red-400 hover:text-red-500 hover:scale-110 transition-all duration-200 border border-white/10"
                       title="Remove from Wishlist"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-5 h-5 fill-current"
+                      >
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                       </svg>
                     </button>
-                    
+
                     {/* Vendor Category Tag */}
                     <div className="absolute bottom-4 left-4">
                       {isFood ? (
@@ -198,7 +218,7 @@ export default function WishlistPage() {
                           <span>{vendor.rating}</span>
                         </div>
                       </div>
-                      
+
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
                         {vendor.address}
                       </p>
@@ -220,14 +240,19 @@ export default function WishlistPage() {
 
                     {/* Action Button */}
                     <button
-                      onClick={() => navigate(`/menu?vendorId=${vendor.id}`)}
+                      // onClick={() => navigate(`/menu?vendorId=${vendor.id}`)}
+                      onClick={() =>
+                        navigate(
+                          `/menu/${isFood ? "food" : "salon"}/${vendor.id}`,
+                        )
+                      }
                       className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-200 active:scale-98 border cursor-pointer ${
-                        isFood 
-                          ? 'bg-[#d4ff00] text-black border-[#d4ff00] hover:bg-[#c0e600] shadow-[0_4px_15px_rgba(212,255,0,0.15)]' 
-                          : 'bg-purple-600 text-white border-purple-600 hover:bg-purple-700 shadow-[0_4px_15px_rgba(147,51,234,0.15)]'
+                        isFood
+                          ? "bg-[#d4ff00] text-black border-[#d4ff00] hover:bg-[#c0e600] shadow-[0_4px_15px_rgba(212,255,0,0.15)]"
+                          : "bg-purple-600 text-white border-purple-600 hover:bg-purple-700 shadow-[0_4px_15px_rgba(147,51,234,0.15)]"
                       }`}
                     >
-                      {isFood ? '🍽️ View Menu' : '📅 Book Slot'}
+                      {isFood ? "🍽️ View Menu" : "📅 Book Slot"}
                     </button>
                   </div>
                 </div>
@@ -236,7 +261,10 @@ export default function WishlistPage() {
           </div>
         )}
       </div>
-      <CustomerLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <CustomerLoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
   );
 }

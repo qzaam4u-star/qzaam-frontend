@@ -16,7 +16,9 @@
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.14.2",
+    "react-slick": "^0.31.0",
     "recharts": "^3.8.1",
+    "slick-carousel": "^1.8.1",
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
