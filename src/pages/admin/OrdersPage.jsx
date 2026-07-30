@@ -99,9 +99,14 @@ export default function OrdersPage() {
                 <tr className="bg-zinc-50 dark:bg-zinc-950/50 text-[10px] uppercase font-bold text-zinc-500 tracking-widest">
                   <th className="px-6 py-4">Order ID</th>
                   <th className="px-6 py-4">Customer</th>
+                  <th className="px-6 py-4">Customer Phone</th>
+                  <th className="px-6 py-4">Services</th>
+                  <th className="px-6 py-4">Vendor</th>
+                  <th className="px-6 py-4">Vendor Phone</th>
+                  <th className="px-6 py-4">Sch Date</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4">Time</th>
+                  <th className="px-6 py-4">Created Time</th>
                   <th className="px-6 py-4 text-right">Action</th>
                 </tr>
               </thead>
@@ -118,6 +123,10 @@ export default function OrdersPage() {
                         <p className="text-sm font-semibold text-zinc-900 dark:text-white">{order.customerName}</p>
                         <p className="text-[10px] text-zinc-500">{order.customerPhone}</p>
                       </td>
+                      <td classname="px-6 py-4">{Array.isArray(order.services) ? order.services.map(service => service.name).join(", "): "-"}</td>
+                      <td classname= "px-6 py-4">{order.vendor?.name || "-"}</td>
+                      <td classname= "px-6 py-4">{order.vendor?.mobile || "-"}</td>
+                      <td classname= "px-6 py-4">{order.slotTime ? new Date(order.slotTime).toLocaleDateString(): "-"}</td>
                       <td className="px-6 py-4">
                         <Badge variant={order.status === 'completed' ? 'green' : ['pending', 'accepted'].includes(order.status) ? 'orange' : 'blue'}>
                           {order.status}
