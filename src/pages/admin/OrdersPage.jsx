@@ -99,7 +99,6 @@ export default function OrdersPage() {
                 <tr className="bg-zinc-50 dark:bg-zinc-950/50 text-[10px] uppercase font-bold text-zinc-500 tracking-widest">
                   <th className="px-6 py-4">Order ID</th>
                   <th className="px-6 py-4">Customer</th>
-                  <th className="px-6 py-4">Customer Phone</th>
                   <th className="px-6 py-4">Services</th>
                   <th className="px-6 py-4">Vendor</th>
                   <th className="px-6 py-4">Vendor Phone</th>
