@@ -476,7 +476,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
               </div>
             </div>
             <div className="shrink-0">
-              <WishlistButton vendorId={vendorId} vendorType="salon" />
+              <Wishlist vendorId={vendorId} vendorType="salon" />
             </div>
           </div>
         </div>
@@ -1146,6 +1146,14 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                   ) : (
                     <>
                       <button
+                        onClick={handleBookAppointment}
+                        disabled={paying}
+                        className="w-full py-4 bg-[#d4ff00] text-black font-black rounded-2xl shadow-[0_0_30px_rgba(212,255,0,0.2)] hover:bg-[#c0e600] transition-all disabled:opacity-50"
+                      >
+                        {paying ? "Booking..." : "Book Appointment"}
+                      </button>
+                      {/*
+                      <button
                         onClick={handleRazorpayPay}
                         disabled={paying}
                         className="w-full py-4 bg-[#d4ff00] text-black font-black rounded-2xl shadow-[0_0_30px_rgba(212,255,0,0.2)] hover:bg-[#c0e600] transition-all disabled:opacity-50"
@@ -1154,6 +1162,8 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                           ? "Processing..."
                           : `Pay ₹${platformFee} via Razorpay`}
                       </button>
+                      */}
+                      {*/
                       {customer && (
                         <button
                           onClick={handleWalletPay}
@@ -1167,6 +1177,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                             (Balance: {formatCurrency(walletBalance)})
                           </span>
                         </button>
+                        */}
                       )}
                     </>
                   )}
