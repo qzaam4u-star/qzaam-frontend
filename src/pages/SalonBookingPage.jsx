@@ -232,7 +232,11 @@ export default function SalonBookingPage({ vendor, vendorId }) {
         }
         const res = await api.post("/orders/calculate-total", payload);
         if (res.data.success) {
-          setBackendTotals(res.data.data);
+          setBackendTotals({
+            ...res.data.data,
+            platformFee: 0,
+            finalTotal: res.data.data.subtotal,
+          });
           console.log("[DEBUG] Salon Backend Totals:", res.data.data);
         }
       } catch (err) {
@@ -1163,7 +1167,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                           : `Pay ₹${platformFee} via Razorpay`}
                       </button>
                       */}
-                      {*/
+                      {/* 
                       {customer && (
                         <button
                           onClick={handleWalletPay}
@@ -1177,8 +1181,8 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                             (Balance: {formatCurrency(walletBalance)})
                           </span>
                         </button>
-                        */}
                       )}
+                      */}
                     </>
                   )}
                   <p className="text-[10px] font-bold text-emerald-500 text-center px-4 py-2 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
