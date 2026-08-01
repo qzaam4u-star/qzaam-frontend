@@ -480,7 +480,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
               </div>
             </div>
             <div className="shrink-0">
-              <Wishlist vendorId={vendorId} vendorType="salon" />
+              <WishlistButton vendorId={vendorId} vendorType="salon" />
             </div>
           </div>
         </div>
