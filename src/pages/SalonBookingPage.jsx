@@ -287,6 +287,34 @@ export default function SalonBookingPage({ vendor, vendorId }) {
       ? referralInput.trim().toUpperCase()
       : null,
   });
+  //Handle booking frontend
+  const handleBookAppointment = async () => {
+  if (!customerName || !customerPhone) {
+    return toast.error("Please fill your details");
+  }
+
+  setPaying(true);
+
+  try {
+    const bookingData = buildOrderData();
+
+    const res = await api.post("/bookings", bookingData);
+
+    if (res.data.success) {
+      const bookingId = res.data.booking.id;
+
+      localStorage.setItem("ql_last_booking_id", bookingId);
+
+      toast.success("Booking Confirmed!");
+
+      navigate(`/booking-status/${bookingId}`);
+    }
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Booking failed");
+  } finally {
+    setPaying(false);
+  }
+};
 
   const handleApplyReferral = async () => {
     if (!customerPhone.trim()) {
