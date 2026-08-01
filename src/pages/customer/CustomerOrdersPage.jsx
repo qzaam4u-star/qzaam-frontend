@@ -28,7 +28,7 @@ export default function CustomerOrdersPage() {
         const res = await api.get(`/customer/orders?phone=${customer.phone}`);
         const orderData = res.data.data || [];
         // NEW
-        const bookingRes = await api.get(/bookings/customer/${customer.phone});
+        const bookingRes = await api.get(`/bookings/customer/${customer.phone}`);
         const bookingData = bookingRes.data.data || [];
 
         // Mark each item with its type
