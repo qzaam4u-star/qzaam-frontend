@@ -28,6 +28,8 @@ export default function CustomerOrdersPage() {
         const res = await api.get(`/customer/orders?phone=${customer.phone}`);
         const orderData = res.data.data || [];
         // NEW
+        console.log("Customer:", customer);
+        console.log("Phone:", customer?.phone);
         const bookingRes = await api.get(`/bookings/customer/${customer.phone}`);
         const bookingData = bookingRes.data.data || [];
 
