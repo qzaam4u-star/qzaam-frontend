@@ -27,17 +27,36 @@ export default function CustomerOrdersPage() {
       try {
         const res = await api.get(`/customer/orders?phone=${customer.phone}`);
         const orderData = res.data.data || [];
+        // NEW
+        const bookingRes = await api.get(/bookings/customer/${customer.phone});
+        const bookingData = bookingRes.data.data || [];
 
-        // Sort: Active orders (not completed/cancelled) on top
-        const sorted = [...orderData].sort((a, b) => {
-          const aActive = a.status !== 'completed' && a.status !== 'cancelled';
-          const bActive = b.status !== 'completed' && b.status !== 'cancelled';
-          if (aActive && !bActive) return -1;
-          if (!aActive && bActive) return 1;
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        });
+        // Mark each item with its type
+        const foodOrders = orderData.map(order => ({
+        ...order,
+        type: 'food'
+        }));
 
-        setOrders(sorted);
+       const salonBookings = bookingData.map(booking => ({
+       ...booking,
+       type: 'salon'
+       }));
+
+      // Merge both
+      const allOrders = [...foodOrders, ...salonBookings];
+
+      // Sort newest first (active on top)
+      const sorted = allOrders.sort((a, b) => {
+      const aActive = a.status !== 'completed' && a.status !== 'cancelled';
+      const bActive = b.status !== 'completed' && b.status !== 'cancelled';
+
+      if (aActive && !bActive) return -1;
+      if (!aActive && bActive) return 1;
+
+      return new Date(b.createdAt || b.slotTime) - new Date(a.createdAt || a.slotTime);
+      });
+
+      setOrders(sorted);
       } catch (err) {
         console.error("Error fetching orders:", err);
         setOrders([]);
@@ -125,6 +144,101 @@ export default function CustomerOrdersPage() {
         ) : (
           <div className="grid gap-4">
             {orders.map((o) => {
+            if (o.type === "salon") {
+  return (
+    <div
+      key={o.id}
+      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[28px] shadow-sm overflow-hidden"
+    >
+      {/* Status */}
+      <div className="px-6 pt-5">
+        <span
+          className={`inline-flex px-4 py-2 rounded-xl text-sm font-bold
+          ${
+            o.status === "completed"
+              ? "bg-green-100 text-green-700"
+              : o.status === "cancelled"
+              ? "bg-red-100 text-red-600"
+              : "bg-[#d4ff00]/20 text-[#7ca000]"
+          }`}
+        >
+          {o.status.toUpperCase()}
+        </span>
+      </div>
+
+      <div className="px-6 pb-6 pt-4">
+
+        {/* Booking ID */}
+        <h3 className="text-2xl font-black text-zinc-900 dark:text-white">
+          #{o.id.slice(0,8).toUpperCase()}
+        </h3>
+
+        {/* Service */}
+        <h2 className="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">
+          {o.services?.[0]?.name || "Salon Service"}
+        </h2>
+
+        {/* Salon */}
+        <p className="text-zinc-500 text-lg mt-1">
+          {o.vendor?.outletName || o.vendor?.name}
+        </p>
+
+        <div className="mt-8 space-y-5">
+
+          <div className="flex items-center gap-4">
+            <span className="text-2xl">📅</span>
+
+            <span className="text-lg text-zinc-700 dark:text-zinc-300">
+              {new Date(o.slotTime).toLocaleDateString("en-IN",{
+                day:"numeric",
+                month:"long",
+                year:"numeric"
+              })}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <span className="text-2xl">🕐</span>
+
+            <span className="text-lg text-zinc-700 dark:text-zinc-300">
+              {new Date(o.slotTime).toLocaleTimeString("en-IN",{
+                hour:"2-digit",
+                minute:"2-digit"
+              })}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span className="text-2xl">📋</span>
+
+              <span className="text-lg text-zinc-700 dark:text-zinc-300">
+                {o.services?.length || 1} Service
+                {(o.services?.length || 1) > 1 ? "s" : ""} Booked
+              </span>
+            </div>
+
+            <span className="text-[#8cb800] text-2xl font-bold">
+              ›
+            </span>
+          </div>
+
+        </div>
+
+        <button
+          onClick={(e)=>{
+            e.stopPropagation();
+            navigate(`/booking/${o.id}`);
+          }}
+          className="mt-8 w-full rounded-2xl bg-[#d4ff00] hover:bg-[#c7ef00] py-4 text-lg font-bold text-black transition"
+        >
+          Continue Booking →
+        </button>
+
+      </div>
+    </div>
+  );
+}
               const step = STATUS_STEPS[o.status] || 1;
               const isActive = o.status !== 'completed' && o.status !== 'cancelled';
               const statusColor = isActive
