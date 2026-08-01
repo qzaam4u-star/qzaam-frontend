@@ -127,7 +127,7 @@ export default function CustomerOrdersPage() {
         <div className="mb-10 flex justify-between items-end">
           <div>
             <h1 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">Your Orders</h1>
-            <p className="text-zinc-500 mt-2">History for <span className="font-mono text-[#8cb800] dark:text-[#d4ff00] font-bold">{customer.phone}</span></p>
+            <p className="text-zinc-500 mt-2">History for <span className="font-mono text-[#8cb800] dark:text-[#d4ff00] font-bold">{customer}</span></p>
           </div>
           <Link to="/">
             <Button variant="outline" size="sm" className="rounded-xl">Home</Button>
