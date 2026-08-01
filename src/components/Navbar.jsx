@@ -138,22 +138,14 @@ export default function Navbar() {
                       </span>
                     )}
                   </Link>
-                  <button
-                    onClick={() => {
-                      const lastOrderId =
-                        localStorage.getItem("ql_last_order_id");
-                      navigate(
-                        lastOrderId
-                          ? `/order-status/${lastOrderId}`
-                          : "/order-status",
-                      );
-                    }}
+                  <Link 
+                    to="/your-orders"
                     className={navLinkClass(
-                      location.pathname.startsWith("/order-status"),
+                      location.pathname === "/your-orders"
                     )}
                   >
-                    Your Order
-                  </button>
+                    Your Orders
+                  </Link>
                 </>
               ) : role === "vendor" ? (
                 <>
