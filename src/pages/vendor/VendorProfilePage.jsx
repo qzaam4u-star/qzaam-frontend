@@ -8,7 +8,7 @@ export default function VendorProfilePage() {
   const [activeTab, setActiveTab] = useState('general');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [uploadingImage, setUploadingImage] = useState(false);
   // General Details State
   const [generalData, setGeneralData] = useState({
     outletName: '',
@@ -68,7 +68,40 @@ export default function VendorProfilePage() {
   const handleBankChange = (e) => {
     setBankData({ ...bankData, [e.target.name]: e.target.value });
   };
+  const handleProfileImageUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
+  const formData = new FormData();
+  formData.append("profileImage", file);
+
+  setUploadingImage(true);
+
+  try {
+    const res = await api.post(
+      "/vendor/upload-profile-image",
+      formData
+    );
+
+    const imageUrl = res.data.imageUrl;
+
+    setGeneralData(prev => ({
+      ...prev,
+      profileImage: imageUrl,
+    }));
+
+    setUser(prev => ({
+      ...prev,
+      profileImage: imageUrl,
+    }));
+
+    toast.success("Profile image updated");
+  } catch (err) {
+    toast.error("Image upload failed");
+  } finally {
+    setUploadingImage(false);
+  }
+};
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -146,7 +179,7 @@ export default function VendorProfilePage() {
 
           {activeTab === 'general' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
+              {/*<div className="md:col-span-2">
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Profile Image URL</label>
                 {isEditing ? (
                   <input type="text" name="profileImage" value={generalData.profileImage} onChange={handleGeneralChange} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#d4ff00]" placeholder="https://example.com/logo.png" />
@@ -158,7 +191,47 @@ export default function VendorProfilePage() {
                     {generalData.profileImage ? <p className="text-sm text-emerald-500 font-bold">Image Set</p> : <p className="text-sm text-zinc-400">No image uploaded</p>}
                   </div>
                 )}
-              </div>
+              </div> */}
+              <div className="md:col-span-2">
+  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">
+    Profile Image
+  </label>
+
+  <div className="flex items-center gap-5">
+
+    <div className="w-24 h-24 rounded-full overflow-hidden border border-zinc-300 dark:border-zinc-700">
+      {generalData.profileImage ? (
+        <img
+          src={generalData.profileImage}
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+          <span className="text-3xl font-bold">
+            {user?.name?.charAt(0).toUpperCase()}
+          </span>
+        </div>
+      )}
+    </div>
+
+    {isEditing && (
+      <div>
+        <label className="cursor-pointer bg-[#d4ff00] hover:bg-[#c5ed00] px-5 py-3 rounded-xl font-bold text-black">
+          {uploadingImage ? "Uploading..." : "Choose Image"}
+
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleProfileImageUpload}
+          />
+        </label>
+      </div>
+    )}
+
+  </div>
+</div>
 
               <div>
                 <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Business Name</label>
