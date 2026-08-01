@@ -230,7 +230,7 @@ export default function CustomerOrdersPage() {
         <button
           onClick={(e)=>{
             e.stopPropagation();
-            navigate(`/booking/${o.id}`);
+            navigate(`/booking-status/${o.id}`);
           }}
           className="mt-8 w-full rounded-2xl bg-[#d4ff00] hover:bg-[#c7ef00] py-4 text-lg font-bold text-black transition"
         >
