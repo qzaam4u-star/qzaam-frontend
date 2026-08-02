@@ -70,6 +70,7 @@ export default function VendorProfilePage() {
   };
   const handleProfileImageUpload = async (e) => {
   const file = e.target.files[0];
+    console.log(file);
   if (!file) return;
 
   const formData = new FormData();
