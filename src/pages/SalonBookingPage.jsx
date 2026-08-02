@@ -464,7 +464,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
         </div>
       </div>
     );
-
+  console.log(vendor);
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white pb-24 transition-colors">
       {/* Header */}
@@ -472,9 +472,20 @@ export default function SalonBookingPage({ vendor, vendorId }) {
         <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/20 flex items-center justify-center text-2xl shrink-0">
-                💇
-              </div>
+              //Profilepic of vendor @customer side
+              <div className="w-14 h-14 rounded-2xl overflow-hidden border border-purple-500/20 shrink-0">
+  {vendor?.profileImage ? (
+    <img
+      src={vendor.profileImage}
+      alt={vendor.outletName}
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-pink-500/10 flex items-center justify-center text-2xl">
+      💇
+    </div>
+  )}
+</div>
               <div className="flex-1 min-w-0">
                 <h1 className="text-xl font-black text-zinc-900 dark:text-white">
                   {vendor?.outletName || "Salon"}
@@ -570,6 +581,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                 const selected = selectedServices.find(
                   (s) => s.id === service.id,
                 );
+                console.log(vendor);
                 return (
                   <button
                     key={service.id}
