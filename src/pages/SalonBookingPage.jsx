@@ -472,7 +472,6 @@ export default function SalonBookingPage({ vendor, vendorId }) {
         <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              //Profilepic of vendor @customer side
               <div className="w-14 h-14 rounded-2xl overflow-hidden border border-purple-500/20 shrink-0">
   {vendor?.profileImage ? (
     <img
