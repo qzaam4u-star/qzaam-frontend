@@ -715,20 +715,22 @@ const filteredServices = services.filter((service) => {
         </div>
       ))}
     </div>
+
+    {/* Indicator Dots */}
+    <div className="flex justify-center gap-2 mt-3">
+      {coupons.map((_, index) => (
+        <div
+          key={index}
+          className={`w-2 h-2 rounded-full ${
+            index === 0
+              ? "bg-[#d4ff00]"
+              : "bg-zinc-300 dark:bg-zinc-700"
+          }`}
+        />
+      ))}
+    </div>
   </div>
 )}
-            <div className="flex justify-center gap-2 mt-3">
-  {coupons.map((_, index) => (
-    <div
-      key={index}
-      className={`w-2 h-2 rounded-full ${
-        index === 0
-          ? "bg-[#d4ff00]"
-          : "bg-zinc-300 dark:bg-zinc-700"
-      }`}
-    />
-  ))}
-</div>
             
             {/* Category Slider */}
             {!searchTerm && (
