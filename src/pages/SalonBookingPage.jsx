@@ -660,6 +660,24 @@ const filteredServices = services.filter((service) => {
 
   </div>
 </div>
+            <Search Bar />
+
+{/* Coupons */}
+{coupons.length > 0 && (
+  <div className="mb-5">
+    <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-3">
+      Available Offers
+    </h2>
+
+    {coupons.map((coupon) => (
+      <CouponCard
+        key={coupon.id}
+        coupon={coupon}
+        onApply={() => console.log(coupon)}
+      />
+    ))}
+  </div>
+)}
             {/* Category Slider */}
             {!searchTerm && (
             <SalonCategorySlider
