@@ -31,6 +31,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
   const [services, setServices] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("general");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [loading, setLoading] = useState(true);
@@ -193,13 +194,25 @@ export default function SalonBookingPage({ vendor, vendorId }) {
   };
 
   // Filter services by selected category
-  const filteredServices = selectedCategory
+  {/*const filteredServices = selectedCategory
     ? services.filter(
         (s) =>
           s.category &&
           s.category.toLowerCase() === selectedCategory.toLowerCase(),
       )
-    : services;
+    : services;*/}
+  const filteredServices = services.filter((service) => {
+  const matchesCategory =
+    !searchTerm &&
+    (!selectedCategory ||
+      service.category?.toLowerCase() === selectedCategory.toLowerCase());
+
+  const matchesSearch =
+    searchTerm &&
+    service.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+  return matchesCategory || matchesSearch;
+});
 
   const subtotal = selectedServices.reduce((sum, s) => sum + s.price, 0);
   const totalDuration = selectedServices.reduce(
@@ -565,6 +578,13 @@ export default function SalonBookingPage({ vendor, vendorId }) {
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
             />
+            <input
+  type="text"
+  placeholder="🔍 Search services..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  className="w-full mb-4 px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm outline-none focus:border-[#d4ff00]"
+/>
 
             <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">
               {selectedCategory.charAt(0).toUpperCase() +
