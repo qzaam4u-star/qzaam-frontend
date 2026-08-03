@@ -684,14 +684,17 @@ const filteredServices = services.filter((service) => {
   </div>
 )} */}
   
-  {/* Coupons */}
+{/* Coupons */}
 {coupons.length > 0 && (
   <div className="mb-5">
     <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-3">
       Available Offers
     </h2>
 
-    <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
+    <div
+      className="overflow-y-auto space-y-3 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-2"
+      style={{ maxHeight: "250px" }}
+    >
       {coupons.map((coupon) => (
         <CouponCard
           key={coupon.id}
@@ -701,7 +704,8 @@ const filteredServices = services.filter((service) => {
       ))}
     </div>
   </div>
-)}          
+)}
+   
             {/* Category Slider */}
             {!searchTerm && (
             <SalonCategorySlider
