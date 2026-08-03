@@ -648,18 +648,12 @@ const filteredServices = services.filter((service) => {
   </div>
 </div>
             {/* Category Slider */}
+            {!searchTerm && (
             <SalonCategorySlider
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
             />
-            <input
-  type="text"
-  placeholder="🔍 Search services..."
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  className="w-full mb-4 px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm outline-none focus:border-[#d4ff00]"
-/>
-
+            )}
             {/*<h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">
               {selectedCategory.charAt(0).toUpperCase() +
                 selectedCategory.slice(1)}{" "}
