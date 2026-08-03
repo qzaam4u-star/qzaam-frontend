@@ -8,6 +8,7 @@ import CustomerLoginModal from "../components/CustomerLoginModal";
 import WishlistButton from "../components/WishlistButton";
 import SalonCategorySlider from "../components/SalonCategorySlider";
 import Modal from "../components/Modal";
+import CouponCard from "../components/CouponCard";
 import toast from "react-hot-toast";
 
 const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY;
@@ -105,6 +106,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
     return slots;
   };
 
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -163,6 +165,22 @@ export default function SalonBookingPage({ vendor, vendorId }) {
     fetchWallet();
   }, [vendorId, user?.id, customer?.id]);
 
+  //coupon fetch here
+  useEffect(() => {
+  const fetchCoupons = async () => {
+    try {
+      const res = await api.get(`/coupons?vendorId=${vendorId}`);
+      setCoupons(res.data.data || []);
+    } catch (err) {
+      console.error("Coupon fetch error:", err);
+    }
+  };
+
+  if (vendorId) {
+    fetchCoupons();
+  }
+}, [vendorId]);
+  
   useEffect(() => {
     if (selectedDate && vendorId) {
       const fetchBookedSlots = async () => {
@@ -252,18 +270,6 @@ const filteredServices = services.filter((service) => {
       return;
     }
     
-    useEffect(() => {
-  const fetchCoupons = async () => {
-    try {
-      const res = await api.get(`/coupons?vendorId=${vendorId}`);
-      setCoupons(res.data.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  fetchCoupons();
-}, [vendorId]);
     const fetchTotals = async () => {
       try {
         const payload = {
@@ -660,7 +666,6 @@ const filteredServices = services.filter((service) => {
 
   </div>
 </div>
-            <Search Bar />
 
 {/* Coupons */}
 {coupons.length > 0 && (
