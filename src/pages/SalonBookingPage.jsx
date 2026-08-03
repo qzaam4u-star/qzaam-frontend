@@ -591,6 +591,62 @@ const filteredServices = services.filter((service) => {
         {/* Step 0: Services */}
         {step === 0 && (
           <div className="space-y-3">
+            <div className="sticky top-0 z-20 bg-white dark:bg-black pt-2 pb-3">
+  <div className="relative">
+
+    {/* Search Icon */}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"
+      />
+    </svg>
+
+    <input
+      type="text"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder="Search for services..."
+      className="
+      w-full
+      h-14
+      rounded-2xl
+      border
+      border-zinc-200
+      dark:border-zinc-700
+      bg-white
+      dark:bg-zinc-900
+      pl-12
+      pr-12
+      text-base
+      outline-none
+      transition-all
+      focus:border-[#d4ff00]
+      focus:ring-2
+      focus:ring-[#d4ff00]/20
+      "
+    />
+
+    {/* Clear Button */}
+    {searchTerm && (
+      <button
+        onClick={() => setSearchTerm("")}
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white"
+      >
+        ✕
+      </button>
+    )}
+
+  </div>
+</div>
             {/* Category Slider */}
             <SalonCategorySlider
               selectedCategory={selectedCategory}
