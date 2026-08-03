@@ -251,7 +251,19 @@ const filteredServices = services.filter((service) => {
       });
       return;
     }
+    
+    useEffect(() => {
+  const fetchCoupons = async () => {
+    try {
+      const res = await api.get(`/coupons?vendorId=${vendorId}`);
+      setCoupons(res.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
+  fetchCoupons();
+}, [vendorId]);
     const fetchTotals = async () => {
       try {
         const payload = {
