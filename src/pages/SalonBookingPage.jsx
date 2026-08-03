@@ -704,7 +704,7 @@ const filteredServices = services.filter((service) => {
               </p>
 
               <p className="text-xs text-zinc-500">
-                📂 {service.category}
+                {service.category}
               </p>
 
               <p className="text-xs text-zinc-500">
