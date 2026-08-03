@@ -200,7 +200,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
           s.category &&
           s.category.toLowerCase() === selectedCategory.toLowerCase(),
       )
-    : services;*/}
+    : services;
   const filteredServices = services.filter((service) => {
   const matchesCategory =
     !searchTerm &&
@@ -212,6 +212,24 @@ export default function SalonBookingPage({ vendor, vendorId }) {
     service.name.toLowerCase().includes(searchTerm.toLowerCase());
 
   return matchesCategory || matchesSearch;
+});*/}
+  const searchResults = services.filter((service) => {
+  if (!searchTerm) return false;
+
+  return (
+    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    service.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    service.subCategory?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+});
+
+const filteredServices = services.filter((service) => {
+  if (searchTerm) return false;
+
+  return (
+    !selectedCategory ||
+    service.category?.toLowerCase() === selectedCategory.toLowerCase()
+  );
 });
 
   const subtotal = selectedServices.reduce((sum, s) => sum + s.price, 0);
@@ -586,17 +604,82 @@ export default function SalonBookingPage({ vendor, vendorId }) {
   className="w-full mb-4 px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm outline-none focus:border-[#d4ff00]"
 />
 
-            <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">
+            {/*<h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">
               {selectedCategory.charAt(0).toUpperCase() +
                 selectedCategory.slice(1)}{" "}
               Services
-            </h2>
-            {filteredServices.length === 0 ? (
-              <div className="text-center py-16 text-zinc-400">
-                No {selectedCategory} services available.
+            </h2> */}
+            {!searchTerm && (
+  <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">
+    {selectedCategory.charAt(0).toUpperCase() +
+      selectedCategory.slice(1)}{" "}
+    Services
+  </h2>
+)}
+            {searchTerm ? (
+  <>
+    <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">
+      Search Results
+    </h2>
+
+    {filteredServices.length === 0 ? (
+      <div className="text-center py-16 text-zinc-400">
+        No services found.
+      </div>
+    ) : (
+      filteredServices.map((service) => {
+        const selected = selectedServices.find(
+          (s) => s.id === service.id
+        );
+
+        return (
+          <button
+            key={service.id}
+            onClick={() => toggleService(service)}
+            className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all text-left ${
+              selected
+                ? "border-[#d4ff00]/40 bg-[#d4ff00]/5"
+                : "border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900"
+            }`}
+          >
+            <div>
+              <p className="font-bold text-sm">
+                {service.name}
+              </p>
+
+              <p className="text-xs text-zinc-500">
+                📂 {service.category}
+              </p>
+
+              <p className="text-xs text-zinc-500">
+                ⏱ {service.duration} min
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span>{formatCurrency(service.price)}</span>
+              <div
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  selected
+                    ? "border-[#d4ff00] bg-[#d4ff00]"
+                    : "border-zinc-300"
+                }`}
+              >
+                {selected && "✓"}
               </div>
-            ) : (
-              filteredServices.map((service) => {
+            </div>
+          </button>
+        );
+      })
+    )}
+  </>
+) : (
+  filteredServices.length === 0 ? (
+    <div className="text-center py-16 text-zinc-400">
+      No {selectedCategory} services available.
+    </div>
+  ) : (
+    filteredServices.map((service) => {
                 const selected = selectedServices.find(
                   (s) => s.id === service.id,
                 );
@@ -630,6 +713,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
                   </button>
                 );
               })
+            )
             )}
             {selectedServices.length > 0 && (
               <div className="sticky bottom-4 mt-6">
