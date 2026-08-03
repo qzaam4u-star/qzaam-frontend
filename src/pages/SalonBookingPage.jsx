@@ -32,6 +32,7 @@ export default function SalonBookingPage({ vendor, vendorId }) {
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("general");
   const [searchTerm, setSearchTerm] = useState("");
+  const [coupons,setCoupons]=useState([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [loading, setLoading] = useState(true);
