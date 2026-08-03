@@ -686,26 +686,50 @@ const filteredServices = services.filter((service) => {
   
 {/* Coupons */}
 {coupons.length > 0 && (
-  <div className="mb-5">
+  <div className="mb-6">
     <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-3">
       Available Offers
     </h2>
 
     <div
-      className="overflow-y-auto space-y-3 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-2"
-      style={{ maxHeight: "250px" }}
+      className="
+        flex
+        gap-4
+        overflow-x-auto
+        snap-x
+        snap-mandatory
+        scroll-smooth
+        pb-2
+        no-scrollbar
+      "
     >
       {coupons.map((coupon) => (
-        <CouponCard
+        <div
           key={coupon.id}
-          coupon={coupon}
-          onApply={() => console.log(coupon)}
-        />
+          className="snap-center shrink-0 w-full"
+        >
+          <CouponCard
+            coupon={coupon}
+            onApply={() => console.log(coupon)}
+          />
+        </div>
       ))}
     </div>
   </div>
 )}
-   
+            <div className="flex justify-center gap-2 mt-3">
+  {coupons.map((_, index) => (
+    <div
+      key={index}
+      className={`w-2 h-2 rounded-full ${
+        index === 0
+          ? "bg-[#d4ff00]"
+          : "bg-zinc-300 dark:bg-zinc-700"
+      }`}
+    />
+  ))}
+</div>
+            
             {/* Category Slider */}
             {!searchTerm && (
             <SalonCategorySlider
