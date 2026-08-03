@@ -678,12 +678,12 @@ const filteredServices = services.filter((service) => {
       Search Results
     </h2>
 
-    {filteredServices.length === 0 ? (
+    {searchResults.length === 0 ? (
       <div className="text-center py-16 text-zinc-400">
         No services found.
       </div>
     ) : (
-      filteredServices.map((service) => {
+      searchResults.map((service) => {
         const selected = selectedServices.find(
           (s) => s.id === service.id
         );
