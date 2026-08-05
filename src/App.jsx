@@ -164,7 +164,7 @@ export default function App() {
                   <Route path="/faqs" element={<FaqPage />} />
                   <Route path="/report-issue" element={<ReportIssuePage />} />
                   <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/offers" element={<OffersPage />} />
+                  <Route path="/offers" element={<offerspage />} />
 
                   {/* ── Auth Routes ────────────────────────────────────────────────────── */}
                   <Route path="/auth" element={<LoginPage />} />
