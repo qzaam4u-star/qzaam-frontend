@@ -486,14 +486,14 @@ export default function Navbar() {
                     >
                       Your Orders
                     </Link>
-                    <Link
-  to="/offers"
-  className={mobileNavLinkClass(
-    location.pathname === "/offers",
-  )}
->
-  Offers
-</Link>
+                    <div className="border-t border-zinc-700 mt-2 pt-3 px-3">
+  <div className="flex items-center justify-between">
+    <span className="text-sm font-semibold text-zinc-300">
+      Dark Mode
+    </span>
+    <ThemeToggle />
+  </div>
+</div>
                     <button
                       onClick={() => {
                         localStorage.removeItem("ql_customer");
