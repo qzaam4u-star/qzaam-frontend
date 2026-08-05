@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function OffersPage() {
+export default function offerspage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white">
 
