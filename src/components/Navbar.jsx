@@ -354,6 +354,20 @@ export default function Navbar() {
                 </div>
               )}
 
+              {/*offers*/}
+              <Link
+  to="/offers"
+  className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#d4ff00] to-[#b9e600] text-black font-bold shadow-lg hover:scale-105 transition-all"
+>
+  🔥 Offers
+</Link>
+
+<Link
+  to="/offers"
+  className="sm:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-[#d4ff00] text-black font-black shadow-lg hover:scale-105 transition-all"
+>
+  %
+</Link>
               {/* Hamburger Toggle */}
               <button
                 onClick={(e) => {
