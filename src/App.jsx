@@ -50,6 +50,7 @@ import FaqPage from "./pages/support/FaqPage";
 import ReportIssuePage from "./pages/support/ReportIssuePage";
 import ContactPage from "./pages/support/ContactPage";
 import ScrollToTop from "./components/ScrollToTop";
+import offerspage from "./pages/offerspage.jsx";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -163,6 +164,7 @@ export default function App() {
                   <Route path="/faqs" element={<FaqPage />} />
                   <Route path="/report-issue" element={<ReportIssuePage />} />
                   <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/offers" element={<OffersPage />} />
 
                   {/* ── Auth Routes ────────────────────────────────────────────────────── */}
                   <Route path="/auth" element={<LoginPage />} />
