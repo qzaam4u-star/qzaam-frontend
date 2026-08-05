@@ -216,9 +216,10 @@ export default function Navbar() {
               )}
             </div>
 
+          
             {/* Right actions */}
-            <div className="flex items-center gap-3">
-              <ThemeToggle />
+            {/* <div className="flex items-center gap-3"> */}
+              {/* <ThemeToggle /> */}
 
               {/* Cart button — always visible when items exist */}
               {itemCount > 0 && (
@@ -477,6 +478,14 @@ export default function Navbar() {
                     >
                       Your Orders
                     </Link>
+                    <div className="border-t border-zinc-200 dark:border-zinc-700 mt-2 pt-3 px-3">
+  <div className="flex items-center justify-between">
+    <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+      Dark Mode
+    </span>
+    <ThemeToggle />
+  </div>
+</div>
                     <button
                       onClick={() => {
                         localStorage.removeItem("ql_customer");
