@@ -50,7 +50,7 @@ import FaqPage from "./pages/support/FaqPage";
 import ReportIssuePage from "./pages/support/ReportIssuePage";
 import ContactPage from "./pages/support/ContactPage";
 import ScrollToTop from "./components/ScrollToTop";
-import offersPage from "./pages/offersPage";
+import offerspage from "./pages/offerspage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
