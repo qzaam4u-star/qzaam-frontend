@@ -23,7 +23,54 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white overflow-x-hidden transition-colors duration-300">
 
+      {/* offers /*}
+      {/* ─── OFFERS BANNER ─── */}
+<section className="pt-24 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto">
 
+    <Link
+      to="/offers"
+      className="group block overflow-hidden rounded-3xl border border-[#d4ff00]/20 bg-gradient-to-r from-[#d4ff00]/10 via-white to-[#d4ff00]/5 dark:from-[#d4ff00]/5 dark:via-zinc-900 dark:to-zinc-900 shadow-lg hover:shadow-[0_0_35px_rgba(212,255,0,0.25)] transition-all duration-300"
+    >
+
+      <div className="flex items-center justify-between p-6">
+
+        <div>
+
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#d4ff00]/15 px-3 py-1 text-xs font-bold text-[#8cb800] uppercase tracking-wider">
+
+            <span className="w-2 h-2 rounded-full bg-[#8cb800] animate-pulse"></span>
+
+            New Today
+
+          </div>
+
+          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">
+
+            Exclusive Salon Offers
+
+          </h2>
+
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+
+            Discover exciting offers and announcement posters uploaded by salons near you.
+
+          </p>
+
+        </div>
+
+        <div className="hidden sm:flex items-center justify-center w-16 h-16 rounded-full bg-[#d4ff00] text-black text-3xl font-black group-hover:translate-x-1 transition">
+
+          →
+
+        </div>
+
+      </div>
+
+    </Link>
+
+  </div>
+</section>
       {/* ─── HERO ─── */}
       <section className="relative flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 text-center pt-24">
         {/* Glow */}
