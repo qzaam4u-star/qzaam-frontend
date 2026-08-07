@@ -196,6 +196,14 @@ export default function Navbar() {
                   >
                     Upload Images
                   </Link>
+                  <Link
+  to="/vendor/announcements"
+  className={navLinkClass(
+    location.pathname === "/vendor/announcements"
+  )}
+>
+  Announcements
+</Link>
                 </>
               ) : role === "admin" ? (
                 <Link
@@ -550,6 +558,14 @@ export default function Navbar() {
                     >
                       Referral
                     </Link>
+                    <Link
+  to="/vendor/announcements"
+  className={mobileNavLinkClass(
+    location.pathname === "/vendor/announcements"
+  )}
+>
+  Announcements
+</Link>
                     <Link
                       to="/vendor/profile"
                       className={mobileNavLinkClass(
