@@ -166,7 +166,7 @@ export default function App() {
                   <Route path="/faqs" element={<FaqPage />} />
                   <Route path="/report-issue" element={<ReportIssuePage />} />
                   <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/offers" element={<offerspage />} />
+                  <Route path="/offers" element={<Offerspage />} />
 
                   {/* ── Auth Routes ────────────────────────────────────────────────────── */}
                   <Route path="/auth" element={<LoginPage />} />
@@ -191,6 +191,14 @@ export default function App() {
                     }
                   />
                   <Route
+                    path="/admin/adminofferspage"
+                    element={
+                      <ProtectedRoute roleRequired="admin">
+                        <Adminofferspage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/admin/orders"
                     element={
                       <ProtectedRoute roleRequired="admin">
@@ -211,14 +219,6 @@ export default function App() {
                     element={
                       <ProtectedRoute roleRequired="admin">
                         <PaymentsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/adminofferspage"
-                    element={
-                      <ProtectedRoute roleRequired="admin">
-                        <adminofferspage />
                       </ProtectedRoute>
                     }
                   />            
