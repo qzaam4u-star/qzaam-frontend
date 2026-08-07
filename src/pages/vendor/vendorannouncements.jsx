@@ -14,7 +14,7 @@ export default function VendorAnnouncements() {
 
   const loadAnnouncements = async () => {
     try {
-      const res = await api.get("/vendor/offers");
+      const res = await api.get("/offers");
 
       if (res.data.success) {
         setAnnouncements(res.data.data);
@@ -47,7 +47,7 @@ export default function VendorAnnouncements() {
       formData.append("endDate", endDate);
       formData.append("image", image);
 
-      const res = await api.post("/vendor/offers", formData, {
+      const res = await api.post("/offers", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -74,7 +74,7 @@ export default function VendorAnnouncements() {
     if (!window.confirm("delete this announcement?")) return;
 
     try {
-      await api.delete(`/vendor/offers/${id}`);
+      await api.delete(`/offers/${id}`);
       loadAnnouncements();
     } catch (err) {
       alert("failed to delete");
