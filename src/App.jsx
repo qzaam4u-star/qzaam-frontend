@@ -51,6 +51,7 @@ import ReportIssuePage from "./pages/support/ReportIssuePage";
 import ContactPage from "./pages/support/ContactPage";
 import ScrollToTop from "./components/ScrollToTop";
 import offerspage from "./pages/offerspage";
+import adminofferspage from "./pages/admin/adminofferspage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -99,6 +100,7 @@ export default function App() {
                     path="/menu/salon/:vendorId"
                     element={<SalonVendorPage />}
                   />
+
 
                   {/* ── Cart & Order Routes ────────────────────────────────────────────── */}
                   <Route path="/cart" element={<CartPage />} />
@@ -212,6 +214,14 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+                    path="/admin/adminofferspage"
+                    element={
+                      <ProtectedRoute roleRequired="admin">
+                        <adminofferspage />
+                      </ProtectedRoute>
+                    }
+                  />            
                   <Route
                     path="/admin/commission"
                     element={
