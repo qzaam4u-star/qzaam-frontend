@@ -52,6 +52,7 @@ import ContactPage from "./pages/support/ContactPage";
 import ScrollToTop from "./components/ScrollToTop";
 import Offerspage from "./pages/offerspage";
 import Adminofferspage from "./pages/admin/adminofferspage";
+import VendorAnnouncements from "./pages/vendor/vendorannouncements";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -329,6 +330,10 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+                      path="/vendor/announcements"
+                      element={<VendorAnnouncements />}
+                   />
 
                   {/* Salon Redirects for Food Vendors */}
                   <Route
