@@ -147,7 +147,7 @@ export default function adminofferspage() {
                 <tr className="bg-zinc-50 dark:bg-zinc-900 text-xs uppercase text-zinc-500">
 
                   <th className="px-6 py-4 text-left">
-                    Image
+                    imageUrl
                   </th>
 
 
@@ -205,10 +205,10 @@ export default function adminofferspage() {
 
                       <td className="px-6 py-4">
 
-                        {offer.image ? (
+                        {offer.imageUrl ? (
 
                           <img
-                            src={offer.image}
+                            src={offer.imageUrl}
                             alt="Offer"
                             className="w-20 h-20 rounded-xl object-cover"
                           />
@@ -216,7 +216,7 @@ export default function adminofferspage() {
                         ) : (
 
                           <div className="w-20 h-20 rounded-xl bg-zinc-100 flex items-center justify-center text-xs text-zinc-400">
-                            No Image
+                            No imageUrl
                           </div>
 
                         )}
