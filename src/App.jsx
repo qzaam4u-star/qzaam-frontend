@@ -191,7 +191,7 @@ export default function App() {
                     }
                   />
                   <Route
-                    path="/admin/adminofferspage"
+                    path="/admin/offers"
                     element={
                       <ProtectedRoute roleRequired="admin">
                         <Adminofferspage />
