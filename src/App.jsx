@@ -54,6 +54,12 @@ import Offerspage from "./pages/offerspage";
 import Adminofferspage from "./pages/admin/adminofferspage";
 import VendorAnnouncements from "./pages/vendor/vendorannouncements";
 import SalonBookingPage from "./pages/SalonBookingPage";
+import VendorCampaigns from "./pages/VendorCampaigns";
+import VendorCreateCampaign from "./pages/VendorCreateCampaign";
+import InfluencerProfile from "./pages/InfluencerProfile";
+import CampaignsPage from "./pages/CampaignsPage";
+import AdminCampaigns from "./pages/admin/AdminCampaigns";
+import AdminInfluencers from "./pages/admin/AdminInfluencers";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -227,7 +233,24 @@ export default function App() {
                         <PaymentsPage />
                       </ProtectedRoute>
                     }
-                  />            
+                  />
+                  <Route
+  path="/admin/campaigns"
+  element={
+    <ProtectedRoute roleRequired="admin">
+      <AdminCampaigns />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/influencers"
+  element={
+    <ProtectedRoute roleRequired="admin">
+      <AdminInfluencers />
+    </ProtectedRoute>
+  }
+/>
                   <Route
                     path="/admin/commission"
                     element={
@@ -286,6 +309,28 @@ export default function App() {
                     }
                   />
 
+                  {/* ── Influencer Routes ─────────────────────────────────────────────── */}
+
+<Route
+  path="/influencer/profile"
+  element={
+    <ProtectedRoute roleRequired="influencer">
+      <InfluencerProfile />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/influencer/campaigns"
+  element={
+    <ProtectedRoute roleRequired="influencer">
+      <CampaignsPage />
+    </ProtectedRoute>
+  }
+/>
+
+{/* ── Vendor Routes ─────────────────────────────────────────────────── */}
+
                   {/* ── Vendor Routes ──────────────────────────────────────────────────── */}
                   <Route
                     path="/vendor/dashboard"
@@ -339,6 +384,23 @@ export default function App() {
                       path="/vendor/announcements"
                       element={<VendorAnnouncements />}
                    />
+                  <Route
+  path="/vendor/campaigns"
+  element={
+    <ProtectedRoute roleRequired="vendor">
+      <VendorCampaigns />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/vendor/campaigns/create"
+  element={
+    <ProtectedRoute roleRequired="vendor">
+      <VendorCreateCampaign />
+    </ProtectedRoute>
+  }
+/>
 
                   {/* Salon Redirects for Food Vendors */}
                   <Route
