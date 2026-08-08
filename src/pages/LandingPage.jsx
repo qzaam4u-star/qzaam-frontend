@@ -38,6 +38,17 @@ export default function LandingPage() {
 
     fetchOffers();
   }, []);
+  useEffect(() => {
+  if (offers.length <= 1) return;
+
+  const interval = setInterval(() => {
+    setCurrentOffer((prev) =>
+      prev === offers.length - 1 ? 0 : prev + 1
+    );
+  }, 4000);
+
+  return () => clearInterval(interval);
+}, [offers.length]);
 
   const handleBecomeVendorClick = () => {
     if (user?.role === 'vendor') {
