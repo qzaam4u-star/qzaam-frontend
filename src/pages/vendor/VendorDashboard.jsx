@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import VendorInstructionsModal from '../../components/VendorInstructionsModal';
 import Spinner from '../../components/Spinner';
 import toast from 'react-hot-toast';
+import { useNavigate } from "react-router-dom";
 
 
 export default function VendorDashboard() {
@@ -27,6 +28,7 @@ export default function VendorDashboard() {
   const [reviewSummary, setReviewSummary] = useState(null);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewFilter, setReviewFilter] = useState('all');
+  const navigate = useNavigate();
 
   
   const audioRef = useRef(null);
@@ -1059,6 +1061,13 @@ export default function VendorDashboard() {
 
   );
 }
+
+<button
+  onClick={() => navigate("/vendor/campaigns/create")}
+  className="bg-[#d4ff00] px-6 py-3 rounded-xl font-black"
+>
+  🎬 Create Campaign
+</button>
 
 // ─── Helpers ─── 
 
