@@ -98,6 +98,7 @@ export default function App() {
                     path="/menu/salon"
                     element={<VendorDiscoveryPage serviceFilter="salon" />}
                   />
+                  <Route path="/campaigns" element={<CampaignsPage />} />
 
                   {/* ── Vendor Routes by Type ──────────────────────────────────────────── */}
                   <Route
