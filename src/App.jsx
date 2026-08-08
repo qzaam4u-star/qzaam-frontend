@@ -56,10 +56,9 @@ import VendorAnnouncements from "./pages/vendor/vendorannouncements";
 import SalonBookingPage from "./pages/SalonBookingPage";
 import VendorCampaigns from "./pages/VendorCampaigns";
 import VendorCreateCampaign from "./pages/VendorCreateCampaign";
-import InfluencerProfile from "./pages/InfluencerProfile";
+import InfluencerProfilePage from "./pages/InfluencerProfilePage";
 import CampaignsPage from "./pages/CampaignsPage";
-import AdminCampaigns from "./pages/admin/AdminCampaigns";
-import AdminInfluencers from "./pages/admin/AdminInfluencers";
+
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -235,7 +234,7 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route
+                  {/*<Route
   path="/admin/campaigns"
   element={
     <ProtectedRoute roleRequired="admin">
@@ -251,7 +250,7 @@ export default function App() {
       <AdminInfluencers />
     </ProtectedRoute>
   }
-/>
+/>*/}
                   <Route
                     path="/admin/commission"
                     element={
@@ -316,7 +315,7 @@ export default function App() {
   path="/influencer/profile"
   element={
     <ProtectedRoute roleRequired="influencer">
-      <InfluencerProfile />
+      <InfluencerProfilePage />
     </ProtectedRoute>
   }
 />
