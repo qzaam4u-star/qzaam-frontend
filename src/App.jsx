@@ -53,6 +53,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Offerspage from "./pages/offerspage";
 import Adminofferspage from "./pages/admin/adminofferspage";
 import VendorAnnouncements from "./pages/vendor/vendorannouncements";
+import salonbookingpage from "./pages/SalonBookingPage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -100,6 +101,10 @@ export default function App() {
                   <Route
                     path="/menu/salon/:vendorId"
                     element={<SalonVendorPage />}
+                  />
+                  <Route
+                    path="/menu/salon-booking/vendorId"
+                    element={<SalonBookingPage />}
                   />
 
 
