@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-
+import { useEffect, useState } from 'react';
 import { features, vendorSteps } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/Button';
@@ -10,6 +10,33 @@ import Card from '../components/Card';
 export default function LandingPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const [offers, setOffers] = useState([]);
+  const [offersLoading, setOffersLoading] = useState(true);
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/offers/home`
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to fetch offers');
+        }
+
+        setOffers(result.data || []);
+      } catch (error) {
+        console.error('Failed to load salon offers:', error);
+        setOffers([]);
+      } finally {
+        setOffersLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, []);
 
   const handleBecomeVendorClick = () => {
     if (user?.role === 'vendor') {
@@ -23,9 +50,169 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white overflow-x-hidden transition-colors duration-300">
 
+      {/* ─── EXCLUSIVE SALON OFFERS ─── */}
+<section className="pt-24 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto">
+
+    {/* Heading */}
+    <div className="flex items-end justify-between mb-8">
+
+      <div>
+        <div className="inline-flex items-center gap-2 rounded-full bg-[#d4ff00]/15 px-3 py-1 text-xs font-bold text-[#8cb800] uppercase tracking-wider">
+          <span className="w-2 h-2 rounded-full bg-[#8cb800] animate-pulse" />
+          New Today
+        </div>
+
+        <h2 className="mt-3 text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">
+          Exclusive Salon Offers
+        </h2>
+
+        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+          Discover exciting offers and announcement posters uploaded by salons near you.
+        </p>
+      </div>
+
+      <Link
+        to="/offers"
+        className="hidden sm:block text-sm font-bold text-[#8cb800] dark:text-[#d4ff00] hover:underline"
+      >
+        View All →
+      </Link>
+
+    </div>
+
+    {/* Loading */}
+    {offersLoading && (
+      <div className="flex gap-5 overflow-x-auto pb-4">
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            className="min-w-[300px] h-[360px] rounded-3xl bg-zinc-100 dark:bg-zinc-900 animate-pulse"
+          />
+        ))}
+      </div>
+    )}
+
+    {/* No offers */}
+    {!offersLoading && offers.length === 0 && (
+      <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-10 text-center">
+        <p className="text-zinc-500 dark:text-zinc-400">
+          No exclusive salon offers available right now.
+        </p>
+      </div>
+    )}
+
+    {/* Offers */}
+    {!offersLoading && offers.length > 0 && (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        {offers.map((offer) => (
+          <div
+            key={offer.id}
+            className="overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-xl transition-all duration-300"
+          >
+
+            {/* Offer Image */}
+            {offer.imageUrl ? (
+              <img
+                src={offer.imageUrl}
+                alt={offer.title}
+                className="w-full h-56 object-cover"
+              />
+            ) : (
+              <div className="w-full h-56 bg-[#d4ff00]/10 flex items-center justify-center text-5xl">
+                🎁
+              </div>
+            )}
+
+            {/* Content */}
+            <div className="p-5">
+
+              {/* Salon */}
+              <div className="flex items-center gap-3 mb-4">
+
+                {offer.vendor?.profileImage ? (
+                  <img
+                    src={offer.vendor.profileImage}
+                    alt={offer.vendor.outletName || 'Salon'}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-[#d4ff00]/20 flex items-center justify-center">
+                    💇
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-sm font-bold text-zinc-900 dark:text-white">
+                    {offer.vendor?.outletName || 'Salon'}
+                  </p>
+
+                  <p className="text-xs text-zinc-500">
+                    Exclusive Offer
+                  </p>
+                </div>
+
+              </div>
+
+              {/* Offer title */}
+              <h3 className="text-xl font-black text-zinc-900 dark:text-white">
+                {offer.title}
+              </h3>
+
+              {/* Description */}
+              {offer.description && (
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                  {offer.description}
+                </p>
+              )}
+
+              {/* Category */}
+              {offer.category && (
+                <span className="inline-block mt-3 px-3 py-1 rounded-full bg-[#d4ff00]/10 text-[#8cb800] text-xs font-bold">
+                  {offer.category}
+                </span>
+              )}
+
+              {/* Validity */}
+              <p className="mt-3 text-xs text-zinc-500">
+                Valid till{' '}
+                {new Date(offer.endDate).toLocaleDateString('en-IN')}
+              </p>
+
+              {/* Button */}
+              <button
+                onClick={() => {
+                  navigate(
+                    `/salon-booking/${offer.vendor.id}?offerId=${offer.id}`
+                  );
+                }}
+                className="mt-5 w-full rounded-xl bg-[#d4ff00] text-black py-3 font-black hover:brightness-95 transition"
+              >
+                View & Book →
+              </button>
+
+            </div>
+          </div>
+        ))}
+
+      </div>
+    )}
+
+    {/* Mobile View All */}
+    <Link
+      to="/offers"
+      className="sm:hidden block text-center mt-6 text-sm font-bold text-[#8cb800] dark:text-[#d4ff00]"
+    >
+      View All Offers →
+    </Link>
+
+  </div>
+</section>
+
       {/* offers /*}
       {/* ─── OFFERS BANNER ─── */}
-<section className="pt-24 px-4 sm:px-6 lg:px-8">
+      {/*<section className="pt-24 px-4 sm:px-6 lg:px-8">
   <div className="max-w-7xl mx-auto">
 
     <Link
@@ -70,7 +257,8 @@ export default function LandingPage() {
     </Link>
 
   </div>
-</section>
+</section>*/}
+      
       {/* ─── HERO ─── */}
       <section className="relative flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 text-center pt-24">
         {/* Glow */}
