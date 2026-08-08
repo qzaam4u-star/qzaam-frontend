@@ -32,8 +32,8 @@ export default function LandingPage() {
         console.error('Failed to load salon offers:', error);
         setOffers([]);
       } finally {
-        setLoading(false);
-      }
+  setOffersLoading(false);
+}
     };
 
     fetchOffers();
