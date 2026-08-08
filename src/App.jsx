@@ -72,7 +72,23 @@ function ProtectedRoute({ children, roleRequired }) {
 
   return children;
 }
+function CampaignEntry() {
+  const { user, isAuthenticated } = useAuth();
 
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (user?.role === "vendor") {
+    return <Navigate to="/vendor/campaigns/create" replace />;
+  }
+
+  if (user?.role === "influencer") {
+    return <Navigate to="/influencer/campaigns" replace />;
+  }
+
+  return <Navigate to="/" replace />;
+}
 export default function App() {
   return (
     <ThemeProvider>
@@ -96,7 +112,7 @@ export default function App() {
                     path="/menu/salon"
                     element={<VendorDiscoveryPage serviceFilter="salon" />}
                   />
-                  <Route path="/campaigns" element={<CampaignsPage />} />
+                  <Route path="/campaigns" element={<CampaignEntry />} />
 
                   {/* ── Vendor Routes by Type ──────────────────────────────────────────── */}
                   <Route
