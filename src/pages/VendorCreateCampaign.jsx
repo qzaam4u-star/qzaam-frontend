@@ -58,7 +58,7 @@ export default function VendorCreateCampaign() {
         "Campaign submitted successfully. Waiting for admin approval."
       );
 
-      navigate("/vendor/campaigns");
+      navigate("/campaigns");
 
     } catch (err) {
 
