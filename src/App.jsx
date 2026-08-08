@@ -54,7 +54,6 @@ import Offerspage from "./pages/offerspage";
 import Adminofferspage from "./pages/admin/adminofferspage";
 import VendorAnnouncements from "./pages/vendor/vendorannouncements";
 import SalonBookingPage from "./pages/SalonBookingPage";
-import VendorCampaigns from "./pages/VendorCampaigns";
 import VendorCreateCampaign from "./pages/VendorCreateCampaign";
 import InfluencerProfilePage from "./pages/InfluencerProfilePage";
 import CampaignsPage from "./pages/CampaignsPage";
@@ -64,11 +63,11 @@ function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <Navigate to="/auth" />;
+    return <Navigate to="/auth" replace />;
   }
 
   if (roleRequired && user.role !== roleRequired) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -384,14 +383,7 @@ export default function App() {
                       path="/vendor/announcements"
                       element={<VendorAnnouncements />}
                    />
-                  <Route
-  path="/vendor/campaigns"
-  element={
-    <ProtectedRoute roleRequired="vendor">
-      <VendorCampaigns />
-    </ProtectedRoute>
-  }
-/>
+                 
 
 <Route
   path="/vendor/campaigns/create"
