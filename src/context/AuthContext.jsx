@@ -15,6 +15,15 @@ export function AuthProvider({ children }) {
     const stored = localStorage.getItem('ql_customer');
     return stored ? JSON.parse(stored) : null;
   });
+  const [customer, setCustomer] = useState(() => {
+  const stored = localStorage.getItem('ql_customer');
+  return stored ? JSON.parse(stored) : null;
+});
+  // Campaign account session
+const [campaignUser, setCampaignUser] = useState(() => {
+  const stored = localStorage.getItem('qzaam_campaign_user');
+  return stored ? JSON.parse(stored) : null;
+});
 
   // Last scanned vendorId — so Menu link always works after order
   const [activeVendorId, setActiveVendorId] = useState(() => {
@@ -39,6 +48,24 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('ql_customer');
     }
   }, [customer]);
+  useEffect(() => {
+  if (customer) {
+    localStorage.setItem('ql_customer', JSON.stringify(customer));
+  } else {
+    localStorage.removeItem('ql_customer');
+  }
+}, [customer]);
+  // Sync campaign user to localStorage
+useEffect(() => {
+  if (campaignUser) {
+    localStorage.setItem(
+      'qzaam_campaign_user',
+      JSON.stringify(campaignUser)
+    );
+  } else {
+    localStorage.removeItem('qzaam_campaign_user');
+  }
+}, [campaignUser]);
 
   // Sync activeVendorId to localStorage
   useEffect(() => {
