@@ -15,10 +15,6 @@ export function AuthProvider({ children }) {
     const stored = localStorage.getItem('ql_customer');
     return stored ? JSON.parse(stored) : null;
   });
-  const [customer, setCustomer] = useState(() => {
-  const stored = localStorage.getItem('ql_customer');
-  return stored ? JSON.parse(stored) : null;
-});
   // Campaign account session
 const [campaignUser, setCampaignUser] = useState(() => {
   const stored = localStorage.getItem('qzaam_campaign_user');
