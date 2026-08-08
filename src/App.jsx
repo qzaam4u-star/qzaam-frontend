@@ -383,16 +383,14 @@ export default function App() {
                       path="/vendor/announcements"
                       element={<VendorAnnouncements />}
                    />
-                 
-
-<Route
-  path="/vendor/campaigns/create"
-  element={
-    <ProtectedRoute roleRequired="vendor">
-      <VendorCreateCampaign />
-    </ProtectedRoute>
-  }
-/>
+                 <Route
+                      path="/vendor/campaigns/create"
+                      element={
+                     <ProtectedRoute roleRequired="vendor">
+                     <VendorCreateCampaign />
+                     </ProtectedRoute>
+                    }
+                 />
 
                   {/* Salon Redirects for Food Vendors */}
                   <Route
