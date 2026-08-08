@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import api from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -22,7 +23,10 @@ const STEPS = [
 
 // generateSlots moved inside component to access dynamic vendor settings
 
-export default function SalonBookingPage({ vendor, vendorId }) {
+export default function SalonBookingPage({ vendor }) {
+  const { vendorId } = useParams();
+const [searchParams] = useSearchParams();
+const offerId = searchParams.get("offerId");
   const navigate = useNavigate();
   const { customer, user } = useAuth();
 
@@ -31,6 +35,8 @@ export default function SalonBookingPage({ vendor, vendorId }) {
   const [galleryIndex, setGalleryIndex] = useState(null);
   const [services, setServices] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedOffer, setSelectedOffer] = useState(null);
+const [offerLoading, setOfferLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("general");
   const [searchTerm, setSearchTerm] = useState("");
   const [coupons,setCoupons]=useState([]);
@@ -72,7 +78,29 @@ export default function SalonBookingPage({ vendor, vendorId }) {
       setCustomerPhone(customer.phone || "");
     }
   }, [customer]);
+// Load offer when user comes from an offer card
+useEffect(() => {
+  if (!offerId) return;
 
+  const fetchOffer = async () => {
+    try {
+      setOfferLoading(true);
+
+      const response = await api.get(`/offers/${offerId}`);
+
+      if (response.data.success) {
+        setSelectedOffer(response.data.data || response.data.offer);
+      }
+    } catch (error) {
+      console.error("Failed to load offer:", error);
+      toast.error("Could not load this offer");
+    } finally {
+      setOfferLoading(false);
+    }
+  };
+
+  fetchOffer();
+}, [offerId]);
   // Reset referral application if phone number changes
   useEffect(() => {
     setIsReferralApplied(false);
