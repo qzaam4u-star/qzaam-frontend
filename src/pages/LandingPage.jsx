@@ -13,12 +13,13 @@ export default function LandingPage() {
 
   const [offers, setOffers] = useState([]);
   const [offersLoading, setOffersLoading] = useState(true);
+  const [currentOffer, setCurrentOffer] = useState(0);
   useEffect(() => {
     const fetchOffers = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/offers/home`
-        );
+  `${import.meta.env.VITE_API_URL}/api/offers`
+);
 
         const result = await response.json();
 
@@ -31,7 +32,7 @@ export default function LandingPage() {
         console.error('Failed to load salon offers:', error);
         setOffers([]);
       } finally {
-        setOffersLoading(false);
+        setLoading(false);
       }
     };
 
@@ -103,101 +104,86 @@ export default function LandingPage() {
     )}
 
     {/* Offers */}
-    {!offersLoading && offers.length > 0 && (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {/* Offers Carousel */}
+{!offersLoading && offers.length > 0 && (
+  <div className="relative w-full">
 
-        {offers.map((offer) => (
-          <div
+    {/* Carousel */}
+    <div className="relative overflow-hidden rounded-3xl">
+
+      <img
+        src={offers[currentOffer].imageUrl}
+        alt="Salon offer"
+        onClick={() => {
+          const offer = offers[currentOffer];
+
+          navigate(
+            `/salon-booking/${offer.vendor.id}?offerId=${offer.id}`
+          );
+        }}
+        className="w-full h-[260px] sm:h-[380px] lg:h-[460px] object-cover rounded-3xl cursor-pointer hover:scale-[1.01] transition-transform duration-300"
+      />
+
+      {/* Previous */}
+      {offers.length > 1 && (
+        <button
+          type="button"
+          onClick={() => {
+            setCurrentOffer((prev) =>
+              prev === 0 ? offers.length - 1 : prev - 1
+            );
+          }}
+          className="absolute left-4 top-1/2 -translate-y-1/2
+                     w-10 h-10 rounded-full
+                     bg-black/50 text-white
+                     flex items-center justify-center
+                     hover:bg-black/70 transition"
+        >
+          ←
+        </button>
+      )}
+
+      {/* Next */}
+      {offers.length > 1 && (
+        <button
+          type="button"
+          onClick={() => {
+            setCurrentOffer((prev) =>
+              prev === offers.length - 1 ? 0 : prev + 1
+            );
+          }}
+          className="absolute right-4 top-1/2 -translate-y-1/2
+                     w-10 h-10 rounded-full
+                     bg-black/50 text-white
+                     flex items-center justify-center
+                     hover:bg-black/70 transition"
+        >
+          →
+        </button>
+      )}
+
+    </div>
+
+    {/* Carousel dots */}
+    {offers.length > 1 && (
+      <div className="flex justify-center gap-2 mt-4">
+        {offers.map((offer, index) => (
+          <button
             key={offer.id}
-            className="overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-xl transition-all duration-300"
-          >
-
-            {/* Offer Image */}
-            {offer.imageUrl ? (
-              <img
-                src={offer.imageUrl}
-                alt={offer.title}
-                className="w-full h-56 object-cover"
-              />
-            ) : (
-              <div className="w-full h-56 bg-[#d4ff00]/10 flex items-center justify-center text-5xl">
-                🎁
-              </div>
-            )}
-
-            {/* Content */}
-            <div className="p-5">
-
-              {/* Salon */}
-              <div className="flex items-center gap-3 mb-4">
-
-                {offer.vendor?.profileImage ? (
-                  <img
-                    src={offer.vendor.profileImage}
-                    alt={offer.vendor.outletName || 'Salon'}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-[#d4ff00]/20 flex items-center justify-center">
-                    💇
-                  </div>
-                )}
-
-                <div>
-                  <p className="text-sm font-bold text-zinc-900 dark:text-white">
-                    {offer.vendor?.outletName || 'Salon'}
-                  </p>
-
-                  <p className="text-xs text-zinc-500">
-                    Exclusive Offer
-                  </p>
-                </div>
-
-              </div>
-
-              {/* Offer title */}
-              <h3 className="text-xl font-black text-zinc-900 dark:text-white">
-                {offer.title}
-              </h3>
-
-              {/* Description */}
-              {offer.description && (
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
-                  {offer.description}
-                </p>
-              )}
-
-              {/* Category */}
-              {offer.category && (
-                <span className="inline-block mt-3 px-3 py-1 rounded-full bg-[#d4ff00]/10 text-[#8cb800] text-xs font-bold">
-                  {offer.category}
-                </span>
-              )}
-
-              {/* Validity */}
-              <p className="mt-3 text-xs text-zinc-500">
-                Valid till{' '}
-                {new Date(offer.endDate).toLocaleDateString('en-IN')}
-              </p>
-
-              {/* Button */}
-              <button
-                onClick={() => {
-                  navigate(
-                    `/salon-booking/${offer.vendor.id}?offerId=${offer.id}`
-                  );
-                }}
-                className="mt-5 w-full rounded-xl bg-[#d4ff00] text-black py-3 font-black hover:brightness-95 transition"
-              >
-                View & Book →
-              </button>
-
-            </div>
-          </div>
+            type="button"
+            onClick={() => setCurrentOffer(index)}
+            className={`h-2 rounded-full transition-all ${
+              index === currentOffer
+                ? "w-6 bg-[#8cb800]"
+                : "w-2 bg-zinc-300 dark:bg-zinc-700"
+            }`}
+          />
         ))}
-
       </div>
     )}
+
+  </div>
+)}
 
     {/* Mobile View All */}
     <Link
