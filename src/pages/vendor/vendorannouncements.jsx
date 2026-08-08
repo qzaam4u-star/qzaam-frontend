@@ -14,7 +14,7 @@ export default function VendorAnnouncements() {
 
   const loadAnnouncements = async () => {
     try {
-      const res = await api.get("/offers");
+      const res = await api.get("/offers/my");
 
       if (res.data.success) {
         setAnnouncements(res.data.data);
@@ -180,16 +180,20 @@ export default function VendorAnnouncements() {
                 </p>
 
                 <span
-                  className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${
-                    item.status === "APPROVED"
-                      ? "bg-green-100 text-green-700"
-                      : item.status === "REJECTED"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-yellow-100 text-yellow-700"
-                  }`}
-                >
-                  {item.status.toLowerCase()}
-                </span>
+  className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${
+    item.status === "APPROVED"
+      ? "bg-green-100 text-green-700"
+      : item.status === "REJECTED"
+      ? "bg-gray-100 text-gray-600"
+      : "bg-yellow-100 text-yellow-700"
+  }`}
+>
+  {item.status === "REJECTED"
+    ? "Sorry"
+    : item.status === "APPROVED"
+    ? "Live"
+    : "Pending"}
+</span>
               </div>
 
               <div className="flex flex-col gap-3">
