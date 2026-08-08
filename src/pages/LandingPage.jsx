@@ -123,17 +123,15 @@ export default function LandingPage() {
     <div className="relative overflow-hidden rounded-3xl">
 
       <img
-        src={offers[currentOffer].imageUrl}
-        alt="Salon offer"
-        onClick={() => {
-          const offer = offers[currentOffer];
+  src={offers[currentOffer].imageUrl}
+  alt="Salon offer"
+  onClick={() => {
+    const offer = offers[currentOffer];
 
-          navigate(
-            `/salon-booking/${offer.vendor.id}?offerId=${offer.id}`
-          );
-        }}
-        className="w-full h-[260px] sm:h-[380px] lg:h-[460px] object-cover rounded-3xl cursor-pointer hover:scale-[1.01] transition-transform duration-300"
-      />
+    navigate(`/salon-booking/${offer.vendor.id}`);
+  }}
+  className="w-full h-[260px] sm:h-[380px] lg:h-[460px] object-cover rounded-3xl cursor-pointer hover:opacity-95 transition"
+/>
 
       {/* Previous */}
       {offers.length > 1 && (
