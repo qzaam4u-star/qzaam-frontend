@@ -53,7 +53,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Offerspage from "./pages/offerspage";
 import Adminofferspage from "./pages/admin/adminofferspage";
 import VendorAnnouncements from "./pages/vendor/vendorannouncements";
-import salonbookingpage from "./pages/SalonBookingPage";
+import Salonbookingpage from "./pages/SalonBookingPage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
