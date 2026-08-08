@@ -103,7 +103,7 @@ export default function App() {
                     element={<SalonVendorPage />}
                   />
                   <Route
-                    path="/menu/salon-booking/vendorId"
+                    path="/menu/salon-booking/:vendorId"
                     element={<SalonBookingPage />}
                   />
 
