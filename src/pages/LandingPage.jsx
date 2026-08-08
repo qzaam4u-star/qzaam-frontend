@@ -61,6 +61,76 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-white overflow-x-hidden transition-colors duration-300">
+       {/* ─────────────────────────────────────
+      BOOKING OR CAMPAIGN
+  ───────────────────────────────────── */}
+
+  <section className="min-h-screen px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+
+    <div className="max-w-5xl mx-auto">
+
+      <div className="text-center mb-12">
+        <p className="text-[#8cb800] font-bold uppercase tracking-wider">
+          Welcome to QZAAM
+        </p>
+
+        <h1 className="text-4xl md:text-6xl font-black mt-3">
+          What are you looking for?
+        </h1>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8">
+
+        {/* BOOKING */}
+        <button
+          onClick={() => navigate('/salons')}
+          className="group text-left rounded-3xl border p-8 bg-white hover:shadow-2xl transition-all"
+        >
+          <div className="text-6xl mb-6">
+            💇
+          </div>
+
+          <h2 className="text-3xl font-black">
+            Book a Salon
+          </h2>
+
+          <p className="mt-3 text-zinc-600">
+            Discover salons, services, offers and book your appointment.
+          </p>
+
+          <div className="mt-6 font-bold">
+            Explore Salons →
+          </div>
+        </button>
+
+
+        {/* CAMPAIGN */}
+        <button
+          onClick={() => navigate('/campaigns')}
+          className="group text-left rounded-3xl border p-8 bg-white hover:shadow-2xl transition-all"
+        >
+          <div className="text-6xl mb-6">
+            🎥
+          </div>
+
+          <h2 className="text-3xl font-black">
+            Campaign
+          </h2>
+
+          <p className="mt-3 text-zinc-600">
+            Discover influencer campaigns and collaboration opportunities.
+          </p>
+
+          <div className="mt-6 font-bold">
+            Explore Campaigns →
+          </div>
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
 
       {/* ─── EXCLUSIVE SALON OFFERS ─── */}
 <section className="pt-24 px-4 sm:px-6 lg:px-8">
