@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation
+} from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "./context/ThemeContext";
 import { CartProvider } from "./context/CartContext";
@@ -98,7 +103,7 @@ export default function App() {
           <BrowserRouter>
             <ScrollToTop />
             <div className="flex flex-col min-h-screen">
-              <Navbar />
+              {!useLocation().pathname.startsWith("/campaigns") && <Navbar />}
               <div className="flex-grow">
                 <Routes>
                   {/* ── Public Routes ────────────────────────────────────────────────── */}
