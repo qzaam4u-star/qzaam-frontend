@@ -94,6 +94,25 @@ function CampaignEntry() {
 
   return <Navigate to="/" replace />;
 }
+function AppLayout() {
+  const location = useLocation();
+
+  const isCampaignPage = location.pathname.startsWith("/campaigns");
+
+  return (
+    <>
+      {!isCampaignPage && <Navbar />}
+
+      <div className="flex-grow">
+        <Routes>
+          {/* YOUR EXISTING ROUTES WILL STAY HERE */}
+        </Routes>
+      </div>
+
+      <Footer />
+    </>
+  );
+}
 export default function App() {
   return (
     <ThemeProvider>
@@ -103,7 +122,7 @@ export default function App() {
           <BrowserRouter>
             <ScrollToTop />
             <div className="flex flex-col min-h-screen">
-              {!useLocation().pathname.startsWith("/campaigns") && <Navbar />}
+              <Navbar />
               <div className="flex-grow">
                 <Routes>
                   {/* ── Public Routes ────────────────────────────────────────────────── */}
