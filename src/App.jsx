@@ -1,8 +1,7 @@
 import {
   BrowserRouter,
   Routes,
-  Route,
-  useLocation
+  Route
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "./context/ThemeContext";
