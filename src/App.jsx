@@ -63,7 +63,7 @@ import VendorCreateCampaign from "./pages/VendorCreateCampaign";
 import InfluencerProfilePage from "./pages/InfluencerProfilePage";
 import CampaignsPage from "./pages/CampaignsPage";
 import CampaignCategoryPage from "./pages/CampaignCategoryPage";
-import MainCharacterAuthPage from "./pages/MainCharacterAuthPage";
+import MainCharacterAuthPage from "./pages/MainCharacterAuthPage.jsx";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
