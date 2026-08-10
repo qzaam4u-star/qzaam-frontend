@@ -63,6 +63,7 @@ import VendorCreateCampaign from "./pages/VendorCreateCampaign";
 import InfluencerProfilePage from "./pages/InfluencerProfilePage";
 import CampaignsPage from "./pages/CampaignsPage";
 import CampaignCategoryPage from "./pages/CampaignCategoryPage";
+import MainCharacterAuthPage from "./pages/MainCharacterAuthPage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -139,6 +140,10 @@ export default function App() {
                   <Route
   path="/campaigns"
   element={<CampaignCategoryPage />}
+/>
+                  <Route
+  path="/campaigns/main-character"
+  element={<MainCharacterAuthPage />}
 />
 
                   {/* ── Vendor Routes by Type ──────────────────────────────────────────── */}
