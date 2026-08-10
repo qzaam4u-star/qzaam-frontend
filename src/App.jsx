@@ -57,7 +57,7 @@ import SalonBookingPage from "./pages/SalonBookingPage";
 import VendorCreateCampaign from "./pages/VendorCreateCampaign";
 import InfluencerProfilePage from "./pages/InfluencerProfilePage";
 import CampaignsPage from "./pages/CampaignsPage";
-
+import CampaignCategoryPage from "./pages/CampaignCategoryPage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -112,7 +112,10 @@ export default function App() {
                     path="/menu/salon"
                     element={<VendorDiscoveryPage serviceFilter="salon" />}
                   />
-                  <Route path="/campaigns" element={<CampaignEntry />} />
+                  <Route
+  path="/campaigns"
+  element={<CampaignCategoryPage />}
+/>
 
                   {/* ── Vendor Routes by Type ──────────────────────────────────────────── */}
                   <Route
