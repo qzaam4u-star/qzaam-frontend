@@ -95,7 +95,7 @@ function CampaignEntry() {
 
   return <Navigate to="/" replace />;
 }
-function AppLayout() {
+{*/function AppLayout() {
   const location = useLocation();
 
   const isCampaignPage = location.pathname.startsWith("/campaigns");
@@ -113,7 +113,7 @@ function AppLayout() {
       <Footer />
     </>
   );
-}
+} */}
 export default function App() {
   return (
     <ThemeProvider>
