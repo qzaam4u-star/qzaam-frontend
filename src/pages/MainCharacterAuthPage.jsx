@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 export default function MainCharacterAuthPage() {
   const navigate = useNavigate();
 
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -14,6 +14,9 @@ export default function MainCharacterAuthPage() {
     email: "",
     mobile: "",
     password: "",
+    outletName: "",
+    address: "",
+    averagePrepTime: "",
   });
 
   const handleChange = (e) => {
@@ -55,7 +58,14 @@ export default function MainCharacterAuthPage() {
           email: form.email,
           mobile: form.mobile,
           password: form.password,
+
+          // Main Character = Vendor
           role: "vendor",
+
+          // Required vendor fields
+          outletName: form.outletName,
+          address: form.address,
+          averagePrepTime: Number(form.averagePrepTime),
         });
 
         const token =
@@ -67,12 +77,12 @@ export default function MainCharacterAuthPage() {
           localStorage.setItem("ql_token", token);
         }
 
-        toast.success("Account created successfully!");
+        toast.success("Main Character account created!");
 
         navigate("/campaigns/main-character/dashboard");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Main Character auth error:", err);
 
       const message =
         err.response?.data?.message ||
@@ -86,25 +96,25 @@ export default function MainCharacterAuthPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen flex items-center justify-center px-6 py-10 bg-white">
 
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-xl">
 
         {/* Back */}
         <button
+          type="button"
           onClick={() => navigate("/campaigns")}
-          className="mb-6 text-sm font-bold text-zinc-500 hover:text-zinc-900"
+          className="mb-5 text-sm font-bold text-zinc-500 hover:text-zinc-900"
         >
           ← Back to Campaigns
         </button>
 
-        {/* Card */}
         <div className="bg-white border border-zinc-200 rounded-3xl shadow-lg p-8">
 
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-7">
 
-            <div className="text-5xl mb-4">
+            <div className="text-5xl mb-3">
               🎬
             </div>
 
@@ -120,7 +130,7 @@ export default function MainCharacterAuthPage() {
 
           </div>
 
-          {/* Login / Register Switch */}
+          {/* Login / Register tabs */}
           <div className="grid grid-cols-2 bg-zinc-100 rounded-xl p-1 mb-7">
 
             <button
@@ -149,9 +159,9 @@ export default function MainCharacterAuthPage() {
 
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
 
+            {/* REGISTER ONLY */}
             {!isLogin && (
               <>
                 {/* Name */}
@@ -183,6 +193,58 @@ export default function MainCharacterAuthPage() {
                     value={form.mobile}
                     onChange={handleChange}
                     placeholder="Enter mobile number"
+                    required
+                    className="w-full border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#d4ff00]"
+                  />
+                </div>
+
+                {/* Outlet Name */}
+                <div>
+                  <label className="block text-sm font-bold mb-2">
+                    Outlet Name
+                  </label>
+
+                  <input
+                    type="text"
+                    name="outletName"
+                    value={form.outletName}
+                    onChange={handleChange}
+                    placeholder="Enter salon / outlet name"
+                    required
+                    className="w-full border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#d4ff00]"
+                  />
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-bold mb-2">
+                    Address
+                  </label>
+
+                  <textarea
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                    placeholder="Enter outlet address"
+                    required
+                    rows={3}
+                    className="w-full border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#d4ff00]"
+                  />
+                </div>
+
+                {/* Prep Time */}
+                <div>
+                  <label className="block text-sm font-bold mb-2">
+                    Average Prep Time (minutes)
+                  </label>
+
+                  <input
+                    type="number"
+                    name="averagePrepTime"
+                    value={form.averagePrepTime}
+                    onChange={handleChange}
+                    placeholder="Example: 30"
+                    min="1"
                     required
                     className="w-full border border-zinc-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#d4ff00]"
                   />
@@ -239,7 +301,7 @@ export default function MainCharacterAuthPage() {
 
           </form>
 
-          {/* Bottom text */}
+          {/* Switch */}
           <p className="text-center text-sm text-zinc-500 mt-6">
             {isLogin
               ? "Don't have an account?"
