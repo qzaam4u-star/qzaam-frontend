@@ -36,6 +36,7 @@ export default function VendorCreateCampaign() {
       const formData = new FormData();
 
       formData.append("title", title);
+      formData.append("salonTier", "STANDARD");
       formData.append("description", description);
       formData.append("minFollowers", minFollowers);
       formData.append("maxFollowers", maxFollowers);
