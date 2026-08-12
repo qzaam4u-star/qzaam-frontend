@@ -65,6 +65,7 @@ import CampaignsPage from "./pages/CampaignsPage";
 import CampaignCategoryPage from "./pages/CampaignCategoryPage";
 import MainCharacterAuthPage from "./pages/MainCharacterAuthPage";
 import MainCharacterDashboard from "./pages/MainCharacterDashboard";
+import AdminCampaignsPage from "./pages/admin/AdminCampaignsPage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -132,6 +133,7 @@ export default function App() {
   path="/campaigns/main-character/dashboard"
   element={<MainCharacterDashboard />}
 />
+
                   {/* ── Vendor Routes by Type ──────────────────────────────────────────── */}
                   <Route
                     path="/menu/food/:vendorId"
@@ -267,6 +269,14 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+  path="/admin/campaigns"
+  element={
+    <ProtectedRoute roleRequired="admin">
+      <AdminCampaignsPage />
+    </ProtectedRoute>
+  }
+/>
                   {/*<Route
   path="/admin/campaigns"
   element={
