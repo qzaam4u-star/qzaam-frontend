@@ -65,7 +65,7 @@ import CampaignsPage from "./pages/CampaignsPage";
 import CampaignCategoryPage from "./pages/CampaignCategoryPage";
 import MainCharacterAuthPage from "./pages/MainCharacterAuthPage";
 import MainCharacterDashboard from "./pages/MainCharacterDashboard";
-import AdminCampaignsPage from "./pages/admin/AdminCampaignsPage";
+import AdminCampaignsPage from "./pages/admin/admincampaignspage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
