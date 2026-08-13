@@ -6,6 +6,7 @@ const menuItems = [
   { name: 'Vendors', icon: '🏪', path: '/admin/vendors' },
   { name: 'Offers', icon: '🎁', path: '/admin/offers' },
   { name: 'Orders', icon: '🛍️', path: '/admin/orders' },
+  { name: 'Campaigns', icon: '📣', path: '/admin/campaigns' },
   { name: 'Customers', icon: '👥', path: '/admin/customers' },
   { name: 'Payments', icon: '💳', path: '/admin/payments' },
   { name: 'Commission', icon: '💰', path: '/admin/commission' },
