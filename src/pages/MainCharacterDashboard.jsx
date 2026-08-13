@@ -53,7 +53,7 @@ export default function MainCharacterDashboard() {
 
           {/* YOUR CAMPAIGNS */}
           <button
-            onClick={() => navigate("/campaigns/main-character/campaigns")}
+            onClick={() => navigate("/vendor/campaigns/main-character/campaigns")}
             className="text-left bg-white border border-zinc-200 rounded-3xl p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition"
           >
             <div className="text-5xl mb-6">
