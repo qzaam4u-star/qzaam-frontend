@@ -66,6 +66,7 @@ import CampaignCategoryPage from "./pages/CampaignCategoryPage";
 import MainCharacterAuthPage from "./pages/MainCharacterAuthPage";
 import MainCharacterDashboard from "./pages/MainCharacterDashboard";
 import AdminCampaignsPage from "./pages/admin/AdminCampaignsPage";
+import VendorCampaignsPage from "./pages/vendor/VendorCampaignsPage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -435,6 +436,14 @@ export default function App() {
                      </ProtectedRoute>
                     }
                  />
+                  <Route
+  path="/vendor/campaigns"
+  element={
+    <ProtectedRoute roleRequired="vendor">
+      <VendorCampaignsPage />
+    </ProtectedRoute>
+  }
+/>
 
                   {/* Salon Redirects for Food Vendors */}
                   <Route
