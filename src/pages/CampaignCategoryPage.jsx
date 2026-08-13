@@ -46,7 +46,8 @@ export default function CampaignCategoryPage() {
 
           {/* BRAND AMBASSADOR */}
           <button
-            onClick={() => navigate("/campaigns/brand-ambassador")}
+            <button
+            onClick={() => navigate("/campaigns/random-ambassador")}
             className="text-left bg-white border rounded-3xl p-8 shadow-sm hover:shadow-lg transition"
           >
             <div className="text-5xl mb-6">
