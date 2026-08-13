@@ -67,6 +67,7 @@ import MainCharacterAuthPage from "./pages/MainCharacterAuthPage";
 import MainCharacterDashboard from "./pages/MainCharacterDashboard";
 import AdminCampaignsPage from "./pages/admin/AdminCampaignsPage";
 import VendorCampaignsPage from "./pages/vendor/VendorCampaignsPage";
+import InfluencerAuthPage from "./pages/InfluencerAuthPage";
 
 function ProtectedRoute({ children, roleRequired }) {
   const { user, isAuthenticated } = useAuth();
@@ -130,6 +131,10 @@ export default function App() {
   path="/campaigns/main-character"
   element={<MainCharacterAuthPage />}
 />
+  <Route
+  path="/campaigns/random-ambassador"
+  element={<InfluencerAuthPage />}
+/>                
 <Route
   path="/campaigns/main-character/dashboard"
   element={<MainCharacterDashboard />}
